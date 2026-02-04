@@ -40,12 +40,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
     email = models.EmailField(_("email address"), unique=True)
-    role = models.CharField(max_length=30, choices=ROLES)
+    role = models.CharField(max_length=30, choices=ROLES, default='buyer')
     phone = models.CharField(_("phone number"), max_length=90)
     location = models.CharField(_("location"), max_length=100)
     date_joined = models.DateTimeField(_("date joined"), auto_now_add=True)
 
-    is_active = models.BooleanField(_(""), default=False)
+    #for login isactive=true
+    is_active = models.BooleanField(_(""), default=True)
     is_staff = models.BooleanField(_(""), default=True)
 
     USERNAME_FIELD = 'email'
