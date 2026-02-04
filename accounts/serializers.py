@@ -6,7 +6,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ['email', 'password', 'first_name','last_name', 'role', 'location']
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -14,3 +14,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+    
+class LoginSerializer(serializers.Serializer):
+    '''
+    LoginSerializer to validate credentials, no meta needed since we are checking not creating
+    '''
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
