@@ -24,3 +24,40 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Order.objects.filter(produce__farmer=user)
         
         return Order.objects.none()
+    
+# farmers accept or reject orders
+# use actions since viewsets provide crud not accept or reject , these are custom
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        '''
+        Farmer accepts an order
+        '''
+        order = self.get_object()
+
+        if request.user != order.produce.farmer:
+            return Response(
+                {'error': 'You are not allowed to accept this order'}
+            )
+        
+        order.status = 'accepted'
+        order.save()
+        return Response({"message": "Order Accepted"})
+    
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        '''
+        Farmer rejects an order
+        '''
+        order = self.get_object()
+
+        if request.user != order.produce.farmer:
+            return Response(
+                {'error': 'You are not allowed to accept this order'}
+            )
+        
+        order.status = 'rejected'
+        order.save()
+        return Response({"message": "Order Rejected"})
+    
+    
