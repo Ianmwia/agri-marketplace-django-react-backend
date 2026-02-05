@@ -3,8 +3,10 @@ from .serializers import RegisterSerializer, LoginSerializer
 from .models import CustomUser
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 #class based Api Views
@@ -20,7 +22,7 @@ class LoginViewSet(viewsets.ViewSet):
     return error if credentials are invalid
     return 405 
     '''
-    serializer = LoginSerializer
+
     def create(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -29,15 +31,22 @@ class LoginViewSet(viewsets.ViewSet):
 
             #authenticate against django auth system
             user = authenticate(request, email=email, password=password)
-            if user:
-                return Response({
-                    'id': user.id,
-                    'email': user.email,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'role': user.role,
-                    'location': user.location,
-                })
-            return Response({'error': "Invalid email or password"})
-
+            if not user:
+                return Response({'error': "Invalid email or password"})
+            
+            login(request, user)
+            
+            return Response({
+                'id': user.id,
+                'message': 'Login Successful',
+                'role': user.role,
+                'email': user.email,
+            })
         return Response(serializer.errors)
+    
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        logout(request)
+        return Response({'message': "Successfully Logged Out"})
