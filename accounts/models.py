@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -44,6 +45,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(_("phone number"), max_length=90)
     location = models.CharField(_("location"), max_length=100)
     date_joined = models.DateTimeField(_("date joined"), auto_now_add=True)
+    image = CloudinaryField(blank=True)
 
     #for login isactive=true
     is_active = models.BooleanField(_(""), default=True)

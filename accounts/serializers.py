@@ -42,3 +42,8 @@ class LoginSerializer(serializers.Serializer):
     '''
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+class ProfileUpdateSerializer(serializers.Serializer):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name','last_name','image', 'location']

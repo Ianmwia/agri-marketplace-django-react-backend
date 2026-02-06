@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, ProfileUpdateSerializer
 from .models import CustomUser
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -50,3 +50,7 @@ class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return Response({'message': "Successfully Logged Out"})
+    
+class UpdateProfileViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = ProfileUpdateSerializer
