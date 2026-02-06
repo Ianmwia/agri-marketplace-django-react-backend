@@ -1,12 +1,33 @@
+from django.core import exceptions
 from rest_framework import serializers
 from .models import CustomUser
+from django.contrib.auth.password_validation import validate_password
+import re
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = CustomUser
         fields = ['email', 'password', 'first_name','last_name', 'role', 'location']
+
+    def validate_password(self, data):
+        if len(data) < 8:
+            raise serializers.ValidationError('Password must be at least 8 characters long')
+        if not re.search(r'[A-Z]', data):
+            raise serializers.ValidationError('Password must have at least one Capital Letter')
+        
+        if not re.search(r'[!@#$%^&*(<>?/]', data):
+            raise serializers.ValidationError('Password must have at least one symbol')
+        
+        user = CustomUser(data)
+        #password = data.get('password')
+        try:
+            validate_password(password=data, user=user)
+        except exceptions.ValidationError as error:
+            raise serializers.ValidationError({"password":list(error.messages)})
+        return data
+    
 
     def create(self, validated_data):
         password = validated_data.pop('password')
