@@ -60,4 +60,27 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.save()
         return Response({"message": "Order Rejected"})
     
+
+    @action(detail=True, methods=['post'])
+    def delivered(self, request, pk=None):
+        '''
+        Only accepted orders can be delivered
+        '''
+        order = self.get_object()
+
+        if request.user != order.produce.farmer:
+            return Response(
+                {'error': 'You are not allowed to accept this order'}
+            )
+        
+        # only accepted o
+        if order.status != 'accepted':
+            return Response(
+                {'error': 'Only accepted Orders can be delivered'}
+            )
+        
+        order.status = 'delivered'
+        order.save()
+        return Response({"message": "Order Delivered"})
+    
     
