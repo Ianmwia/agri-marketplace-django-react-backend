@@ -11,9 +11,9 @@ class Order(models.Model):
     -farmer accepts or rejects
     """
     STATUS = (
-        ('pending','Pending')
-        ('accepted','Accepted')
-        ('rejected','Rejected')
+        ('pending','Pending'),
+        ('accepted','Accepted'),
+        ('rejected','Rejected'),
         ('delivered','Delivered')
     )
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
@@ -21,6 +21,9 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(_("number of items ordered"))
     status = models.CharField(_("purchase status"), max_length=50, choices=STATUS, default='pending')
     created_at = models.DateTimeField(_("date when produce was ordered"), auto_now_add=True)
+
+    #add rejection reason
+    rejection_reason = models.TextField(_("reason for rejection"), blank=True, null=True)
 
     def __str__(self):
         return f'Order #{self.id} - {self.produce.name}'
