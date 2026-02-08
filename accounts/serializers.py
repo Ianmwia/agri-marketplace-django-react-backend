@@ -9,7 +9,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'password','role', 'location']
+        fields = ['first_name', 'last_name', 'email', 'password','role', 'location']
 
     def validate_password(self, data):
         if len(data) < 8:
@@ -46,4 +46,5 @@ class LoginSerializer(serializers.Serializer):
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name','last_name','image', 'location', 'phone_number']
+        fields = ['first_name','last_name','image', 'location', 'phone']
+        read_only_fields = ['email', 'role']

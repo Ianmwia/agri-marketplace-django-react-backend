@@ -2,17 +2,26 @@ from django.shortcuts import render
 from .serializers import RegisterSerializer, LoginSerializer, ProfileUpdateSerializer
 from .models import CustomUser
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 #class based Api Views
-class RegisterViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()
-    serializer_class = RegisterSerializer
+class RegisterViewSet(APIView):
+    permission_classes = []
+    serializer_class = RegisterSerializer 
+    #only post no get
+    
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Registration Successful'})
+        return Response(serializer.errors)
     
 class LoginViewSet(viewsets.ViewSet):
     '''
@@ -22,6 +31,7 @@ class LoginViewSet(viewsets.ViewSet):
     return error if credentials are invalid
     return 405 
     '''
+    serializer_class = LoginSerializer
 
     def create(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -51,6 +61,32 @@ class LogoutView(APIView):
         logout(request)
         return Response({'message': "Successfully Logged Out"})
     
-class UpdateProfileViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()
+class UpdateProfileView(APIView):
+    '''
+    get a users profile and update
+
+    '''    
     serializer_class = ProfileUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        '''
+        get the existing users data
+        '''
+        user = request.user
+        serializer = ProfileUpdateSerializer(user)
+        return Response(serializer.data)
+    
+    def put(self, request):
+        '''
+        use put to update the data 
+        request the users data
+        and partial to update just one field at a time
+        '''
+        serializer = ProfileUpdateSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+
+            serializer.save()
+            return Response({'message': 'Profile updated'})
+        
+        return Response(serializer.errors)
