@@ -11,6 +11,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProduceSerializer(serializers.ModelSerializer):
     #accept input by email not fk id
+    image = serializers.ImageField(required=False, allow_null=True)
+
     farmer = serializers.SlugRelatedField(
         slug_field='email',
         queryset=User.objects.all(),

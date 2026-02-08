@@ -6,7 +6,7 @@ from cloudinary.models import CloudinaryField
 
 # Create your models here.
 class Category(models.Model):
-    name = models.CharField(_("categories"), max_length=10, unique=True)
+    name = models.CharField(_("categories"), max_length=100, unique=True)
     def __str__(self):
         return self.name
     
