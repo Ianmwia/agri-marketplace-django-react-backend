@@ -44,6 +44,8 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False, allow_null=True)
+    # install pillow for drf to render
     class Meta:
         model = CustomUser
         fields = ['first_name','last_name','image', 'location', 'phone']
