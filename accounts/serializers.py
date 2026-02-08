@@ -9,7 +9,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'password', 'first_name','last_name', 'role', 'location']
+        fields = ['email', 'password','role', 'location']
 
     def validate_password(self, data):
         if len(data) < 8:
@@ -17,7 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not re.search(r'[A-Z]', data):
             raise serializers.ValidationError('Password must have at least one Capital Letter')
         
-        if not re.search(r'[!@#$%^&*(<>?/]', data):
+        if not re.search(r'[!@#$%^&*()<>?/]', data):
             raise serializers.ValidationError('Password must have at least one symbol')
         
         user = CustomUser(data)
@@ -43,7 +43,7 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
-class ProfileUpdateSerializer(serializers.Serializer):
+class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name','last_name','image', 'location']
+        fields = ['first_name','last_name','image', 'location', 'phone_number']
