@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+
+
+{% block content %}
+        <div class="min-h-screen flex items-center justify-center">
+            <form class="bg-gray-700 rounded-lg p-3" action="{% url 'logout' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% for field in serializer %}
+                    <div class="mb-2">
+                        <label class="mb-2 display-none text-sm font semibold ">
+                            {{ field.label}}
+                        </label>
+                
+                    </div>
+                    <div class="p-2 w-full bg-white rounded-lg">
+                        {% render_field field style=field.style%}
+                    </div>
+                    {% endfor %}
+                        
+                    <button class="rounded-lg p-2 mt-2 text-white bg-green-700 hover:cursor-pointer" type="submit">Register</button>
+            </form>
+            
+            {% if message %}
+                <p class="text-red-400 font-bold">{{ message }}</p>
+            {% endif %}
+                
+        </div>
+{% endblock content %}
+    
