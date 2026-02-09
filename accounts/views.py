@@ -93,17 +93,25 @@ class UpdateProfileView(APIView):
     serializer_class = ProfileUpdateSerializer
     permission_classes = [IsAuthenticated]
 
+    #http render in django
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile.html'
+
     def get(self, request):
         '''
         get the existing users data
         '''
         user = request.user
         serializer = ProfileUpdateSerializer(user)
-        return Response(serializer.data)
+
+        #edit mode for template rendering a single users profile
+        edit_mode = request.GET.get('edit') == '1'
+
+        return Response({'data':serializer, 'serializer': serializer, 'edit_mode': edit_mode})
     
-    def put(self, request):
+    def post(self, request):
         '''
-        use put to update the data 
+        use put to update the data / use post for browser
         request the users data
         and partial to update just one field at a time
         '''
@@ -111,6 +119,6 @@ class UpdateProfileView(APIView):
         if serializer.is_valid():
 
             serializer.save()
-            return Response({'message': 'Profile updated'})
+            return Response({'message': 'Profile updated', 'serializer': serializer})
         
         return Response(serializer.errors)
