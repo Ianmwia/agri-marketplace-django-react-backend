@@ -48,5 +48,5 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     # install pillow for drf to render
     class Meta:
         model = CustomUser
-        fields = ['first_name','last_name','image', 'location', 'phone']
+        fields = ['first_name','last_name','email','image', 'location', 'phone', 'role']
         read_only_fields = ['email', 'role']
