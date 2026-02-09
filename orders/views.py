@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Order
 from .serializers import OrderSerializer
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 
 
 # Create your views here.
@@ -14,8 +14,13 @@ class OrderViewSet(viewsets.ModelViewSet):
     Farmer views orders on their produce
     '''
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        #swagger line for mock anon user to 
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
+        
         user = self.request.user
         if user.role == 'buyer':
             return Order.objects.filter(buyer=user)

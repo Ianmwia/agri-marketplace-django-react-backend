@@ -7,6 +7,7 @@ from .serializers import ProduceSerializer
 
 class IsAFarmer(permissions.BasePermission):
     '''check if the authenticated user role is farmer'''
+    
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role == 'farmer'
     
@@ -16,6 +17,10 @@ class ProduceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         '''list all each farmers produce'''
+        #swagger line for mock anon user to 
+        if getattr(self, 'swagger_fake_view', False):
+            return Produce.objects.none()
+        
         return Produce.objects.filter(farmer=self.request.user).order_by('-date_created')
     
     def perform_create(self, serializer):
