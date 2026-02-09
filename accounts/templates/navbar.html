@@ -5,6 +5,7 @@
         <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'login-list' %}">Login</a></li>
         -->
         {% if user.is_authenticated %}
+        <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'profile' %}">Profile</a></li>
         <form action="{% url 'logout'%}" method="post" class="ml-auto mr-3">
                 {% csrf_token %}
                 <button class=" text-white bg-red-300 rounded-lg p-2 hover:bg-red-600 hover:cursor-pointer" type="submit">Logout</button>

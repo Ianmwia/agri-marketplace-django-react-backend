@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+
+
+{% block content %}
+        <div>
+            Profile Page
+        </div>
+        <div>
+        
+        {% if not edit_mode %}
+            
+            <!--Display-->
+            <div>
+                <!--
+                {% if request.user.image %}
+                <div>
+                    <img loading="lazy" class="bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center" src="{{ request.user.image.url }}" alt="{{ request.user.first_name }}">
+                </div>
+                {% endif %}-->
+                <p class="text-[18px]">Name:{{request.user.first_name}} {{request.user.last_name}}</p>
+                <p>Email:{{request.user.email}} </p>
+                <p>Phone:{{request.user.phone}} </p>
+                <p>Location:{{request.user.location}} </p>
+                <p>Role:{{request.user.role}} </p>
+            
+                <a href="?edit=1">
+                    Edit Profile
+                </a>
+            </div>
+            {% else %}
+            <!--edit-->
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="flex flex-col gap-2">
+                        <div>
+                            <label for="">First Name</label>
+                            <input type="text"
+                                    name= 'first_name'
+                                    class="p-2 bg-gray-300 text-white rounded-lg"
+                                    value="{{ serializer.first_name.value }}"
+                            >
+                        </div>
+                        <div>
+                            <label for="">Last Name</label>
+                            <input type="text"
+                                    name= 'last_name'
+                                    class="p-2 bg-gray-300 text-white rounded-lg"
+                                    value="{{ serializer.last_name.value }}"
+                            >
+                        </div>
+                        <div>
+                            <label for="">Location</label>
+                            <input type="text"
+                                    name= 'location'
+                                    class="p-2 bg-gray-300 text-white rounded-lg"
+                                    value="{{ serializer.location.value }}"
+                            >
+                        </div>
+                        <div>
+                            <label for="">Phone</label>
+                            <input type="text"
+                                    name= 'phone'
+                                    class="p-2 bg-gray-300 text-white rounded-lg"
+                                    value="{{ serializer.phone.value }}"
+                            >
+                        </div>
+                        <div>
+                            <label for="">Profile Image</label>
+                            <input type="file"
+                                    name= 'image'
+                                    class="p-2 bg-gray-300 text-white rounded-lg"
+                                    value="{{ serializer.image.value }}"
+                            >
+                        </div>
+                        
+                    <div class="mb-2 mt-2">
+                    <button type="submit" class="bg-green-600 text-white p-1 rounded">
+                        Update
+                    </button>
+                    </div>
+                    <a href="{% url 'profile' %}" class="bg-red-600 text-white p-2 rounded w-1/10">Cancel</a>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+{% endblock content %}
+    
