@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load rest_framework %}
+
+
+{% block content %}
+    <div>Produce</div>
+    <form action="{% url 'produce-list' %}" method='post'>
+        {% csrf_token %}
+        {% render_form serializer %}
+        <button type="submit">Create Produce</button>
+    </form>
+    <div>
+        <h3>Orders placed</h3>
+        <ul>
+        {% for order in orders %}
+        <li>Order #{{order.id }} | {{ order.produce.name }} (Quantity {{order.quantity}})</li>
+           {% empty %} 
+           <li>No orders Placed</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endblock content %}
+    

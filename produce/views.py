@@ -2,6 +2,9 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions, serializers
 from .models import Produce
 from .serializers import ProduceSerializer
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from orders.models import Order
 
 # Create your views here.
 
@@ -14,6 +17,16 @@ class IsAFarmer(permissions.BasePermission):
 class ProduceViewSet(viewsets.ModelViewSet):
     serializer_class = ProduceSerializer
     permission_classes = [IsAFarmer]
+
+    #http render in django
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'produce.html'
+
+    def list(self, request, *args, **kwargs):
+        # get the farmers produce
+        serializer = self.get_serializer()
+        orders = Order.objects.filter(produce__farmer=request.user)
+        return Response({'serializer': serializer, 'orders': orders})
 
     def get_queryset(self):
         '''list all each farmers produce'''
