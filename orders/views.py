@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from .models import Order
 from .serializers import OrderSerializer
 from rest_framework import viewsets, permissions
+from rest_framework.renderers import TemplateHTMLRenderer
+from produce.models import Produce
 
 
 # Create your views here.
@@ -16,6 +18,22 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    #http render in django
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'order.html'
+
+    def list(self, request, *args, **kwargs):
+        #get empty serializer
+        serializer = self.get_serializer()
+        
+        #get existing orders
+        orders = self.get_queryset()
+
+        #get available produce so a buyer can select an item
+        available_produce = Produce.objects.all()
+
+        return Response({'serializer': serializer, 'orders':orders, 'available_produce': available_produce})
+    
     def get_queryset(self):
         #swagger line for mock anon user to 
         if getattr(self, 'swagger_fake_view', False):

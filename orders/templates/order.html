@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load rest_framework %}
+
+
+{% block content %}
+    <div>Orders</div>
+    
+    {% if request.user.role == 'buyer' %}
+    <div>
+        <h3>Place an order</h3>
+        <form action="{% url 'order-list' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% render_form serializer %}
+            <button type="submit">Place Order</button>
+        </form>
+    </div>
+        
+    {% endif %}
+        <div>
+            <h3>Your orders</h3>
+            <ul>
+            {% for order in orders %}
+                <li>
+                    order #{{ order.id }} 
+                    status: {{ order.status }}
+                    Quantity: {{order.quantity}}
+                </li>
+            {% empty %}
+            <li>No orders Found</li>
+                
+            {% endfor %}
+                </ul>
+        </div>
+{% endblock content %}
+    
