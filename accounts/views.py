@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
 
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect
 
 # Create your views here.
 #class based Api Views
@@ -62,13 +63,15 @@ class LoginViewSet(viewsets.ViewSet):
                 return Response({'error': "Invalid email or password"})
             
             login(request, user)
+
+            return redirect('profile')
             
-            return Response({
-                'id': user.id,
-                'message': 'Login Successful',
-                'role': user.role,
-                'email': user.email,
-            })
+            # return Response({
+            #     'id': user.id,
+            #     'message': 'Login Successful',
+            #     'role': user.role,
+            #     'email': user.email,
+            # })
         return Response({ 'serializer': serializer, 'errors' :serializer})
     
 class LogoutView(APIView):
@@ -83,7 +86,8 @@ class LogoutView(APIView):
 
     def post(self, request):
         logout(request)
-        return Response({'message': "Successfully Logged Out"})
+        return redirect('login-list')
+        #return Response({'message': "Successfully Logged Out"})
     
 class UpdateProfileView(APIView):
     '''
