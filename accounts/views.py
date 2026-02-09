@@ -6,6 +6,7 @@ from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from django.contrib.auth import authenticate, login, logout
 
@@ -15,13 +16,21 @@ class RegisterViewSet(APIView):
     permission_classes = []
     serializer_class = RegisterSerializer 
     #only post no get
+
+    #http render in django
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'register.html'
+
+    def get(self, request):
+        serializer = RegisterSerializer
+        return Response({'serializer': serializer})
     
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': 'Registration Successful'})
-        return Response(serializer.errors)
+            return Response({'message': 'Registration Successful', 'serializer': serializer})
+        return Response({'serializer': serializer, 'errors': serializer.errors})
     
 class LoginViewSet(viewsets.ViewSet):
     '''
@@ -32,6 +41,14 @@ class LoginViewSet(viewsets.ViewSet):
     return 405 
     '''
     serializer_class = LoginSerializer
+
+     #http render in django
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'login.html'
+
+    def get(self, request):
+        serializer = LoginSerializer
+        return Response({'serializer': serializer})
 
     def create(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -52,10 +69,17 @@ class LoginViewSet(viewsets.ViewSet):
                 'role': user.role,
                 'email': user.email,
             })
-        return Response(serializer.errors)
+        return Response({ 'serializer': serializer, 'errors' :serializer})
     
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
+
+    #http render in django
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'logout.html'
+
+    def get(self, request):
+        return Response({})
 
     def post(self, request):
         logout(request)
