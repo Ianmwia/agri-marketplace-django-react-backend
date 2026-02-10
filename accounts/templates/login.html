@@ -3,13 +3,13 @@
 
 
 {% block content %}
-        <div class="min-h-screen flex items-center justify-center">
-            <form class="bg-gray-700 rounded-lg p-3" action="{% url 'login-list' %}" method="post" enctype="multipart/form-data">
+        <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+            <form class="bg-gray-700 rounded-lg p-7 shadow-sm border rounded-lg space-x-8 space-y-10" action="{% url 'login-list' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     {% for field in serializer %}
                     <div class="mb-2">
-                        <label class="mb-2 display-none text-sm font semibold ">
+                        <label class=" sr-only">
                             {{ field.label}}
                         </label>
                 
@@ -19,7 +19,7 @@
                     </div>
                     {% endfor %}
                         
-                    <button class="rounded-lg p-2 mt-2 text-white bg-green-700 hover:cursor-pointer" type="submit">Login</button>
+                    <button class=" w-2/3 mx-auto block rounded-lg p-2 mt-4 shadow-sm text-center text-white bg-green-700 hover:cursor-pointer" type="submit">Login</button>
             </form>
             
             {% if message %}

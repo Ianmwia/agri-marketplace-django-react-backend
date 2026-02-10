@@ -4,22 +4,23 @@
 
 {% block content %}
         <div class="min-h-screen flex items-center justify-center">
-            <form class="bg-gray-700 rounded-lg p-3" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+            <form class="bg-gray-700 rounded-lg p-3 space-x-8 space-y-10" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+                <p class="text-center text-white text-[24px] font-bold w-full mx-auto">Register</p>
                     {% csrf_token %}
                     
                     {% for field in serializer %}
-                    <div class="mb-5">
-                        <label class="mb-2 text-sm font semibold ">
+                    <div class="mb-0">
+                        <label class="sr-only">
                             {{ field.label}}
                         </label>
                 
                     </div>
-                    <div class="p-2 w-full bg-white rounded-lg">
+                    <div class="mb-4 p-2 w-full bg-white rounded-lg">
                         {% render_field field style=field.style%}
                     </div>
                     {% endfor %}
                         
-                    <button class="rounded-lg p-2 mt-2 text-white bg-green-700 hover:cursor-pointer" type="submit">Register</button>
+                    <button class=" w-2/3 mx-auto block rounded-lg p-2 mt-4 shadow-sm text-center text-white bg-green-700 hover:cursor-pointer" type="submit">Register</button>
             </form>
             
             {% if message %}
