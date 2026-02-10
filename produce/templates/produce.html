@@ -13,7 +13,7 @@
         <button class=" w-2/3 mx-auto block rounded-lg p-2 mt-4 shadow-sm text-center text-white bg-green-700 hover:cursor-pointer" type="submit">Create Produce</button>
     </form>
     </div>
-    <div class="bg-white p-3 rounded lg shadow-md border-gray-300">
+    <div class="bg-white p-3 rounded lg shadow-md border-gray-300 mb-7">
         <h3 class=" text-xl font-semibold mb-6 pb-2">Orders placed</h3>
         <ul class="divide-y divide-gray-100">
         {% for order in orders %}
@@ -26,5 +26,36 @@
         {% endfor %}
         </ul>
     </div>
+    <div class="mb-7 bg-white p-6 rounded-sm border">
+        <h3 class="text-[24px] font-bold">Your Produce Inventory</h3>
+        <ul class="divide-y divide-gray-100">
+            
+            {% for produce in produce_list %}
+                <li class="py-4 flex justify justify-between items-center">
+                    <div>
+                        <span class="font-bold block text-sm py-2">{{ produce.name }}</span>
+                        <span class="font-bold block text-sm">{{ produce.category }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold block text-sm py-2"><span class="text-gray-400">Price: </span>{{ produce.price }}</span>
+                        <span class="font-bold block text-sm tet-gray-200"><span class="text-gray-400">Quantity: </span>{{ produce.quantity }}</span>
+                    </div>
+                    <div>
+                {% if produce.image %}
+                <div>
+                    <img loading="lazy" class="bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center" src="{{ produce.image.url }}" >
+                </div>
+                {% else %}
+                    <img loading="lazy" class=" ring-4 bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center">
+                {% endif %}                  
+                </div>
+                </li>
+            {% empty %}
+            <li>You haven't added any produce yet</li>
+            {% endfor %}
+                
+        </ul>
+    </div>
+     
 {% endblock content %}
     
