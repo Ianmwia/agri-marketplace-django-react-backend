@@ -3,30 +3,32 @@
 
 
 {% block content %}
-    <div>Orders</div>
+    <div class="text-3-xl font-bold mb-4">Orders</div>
     
     {% if request.user.role == 'buyer' %}
-    <div>
-        <h3>Place an order</h3>
-        <form action="{% url 'order-list' %}" enctype="multipart/form-data">
+    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3">
+        <h3 class="text-xl font-semibold mb-2 border-b pb-2">Place an order</h3>
+        <form action="{% url 'order-list' %}" enctype="multipart/form-data" method="post">
             {% csrf_token %}
+            <div class="prose max-w-none space-y-2">
             {% render_form serializer %}
-            <button type="submit">Place Order</button>
+            </div>
+            <button type="submit" class="mt-2 p-2 bg-[#6c9f48] text-white hover:cursor-pointer rounded-lg">Place Order</button>
         </form>
     </div>
         
     {% endif %}
-        <div>
-            <h3>Your orders</h3>
-            <ul>
+        <div class="bg-white p-3 rounded lg shadow-md border-gray-300">
+            <h3 class="text-xl font-semibold mb-2 text-black border-b">Your orders</h3>
+            <ul class="divide-y divide-gray-200">
             {% for order in orders %}
-                <li>
-                    order #{{ order.id }} 
-                    status: {{ order.status }}
-                    Quantity: {{order.quantity}}
+                <li class="py-2 flex justify-between items-center text-gray-300">
+                    <span class="font-medium text-black">Order #{{ order.id }} </span>
+                    <span class="px-3 pt-1 rounded-full text-sm font-semibold">{{ order.status }}</span>
+                    <span class="text-sm text-gray-500">Quantity: {{order.quantity}}</span> 
                 </li>
             {% empty %}
-            <li>No orders Found</li>
+            <li class="py-4 text-gray-500 text-center">No orders Found</li>
                 
             {% endfor %}
                 </ul>
