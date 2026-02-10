@@ -1,5 +1,5 @@
 <nav>
-    <ul class="flex gap-4 bg-blue-300 text-white p-2 gap-2 items-center">
+    <ul class="flex gap-4 bg-[#6c9f48] text-white p-2 gap-2 items-center space-x-2">
         <!--
         <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'register' %}">Register</a></li>
         <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'login-list' %}">Login</a></li>
@@ -11,24 +11,25 @@
         <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'produce-list' %}">Produce</a></li>
         {% endif %}
         -->
+        <p class="text-[30px] font-bold">Kilimo AgriMarketplace</p>
 
         {% if user.is_authenticated %}
-        <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'profile' %}">Profile</a></li>
+        <li class=" hover:cursor-pointer"><a href="{% url 'profile' %}">Profile</a></li>
 
         {% if user.role == 'buyer' %}
-            <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'order-list' %}">Orders</a></li>
+            <li class="hover:cursor-pointer"><a href="{% url 'order-list' %}">Orders</a></li>
         {% else %}  
-        <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'produce-list' %}">Produce</a></li>
+        <li class="hover:cursor-pointer"><a href="{% url 'produce-list' %}">Produce</a></li>
         {% endif %}
-        
+
         <form action="{% url 'logout'%}" method="post" class="ml-auto mr-3">
                 {% csrf_token %}
                 <button class=" text-white bg-red-300 rounded-lg p-2 hover:bg-red-600 hover:cursor-pointer" type="submit">Logout</button>
         </form>
 
         {% else %}
-        <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'register' %}">Register</a></li>
-        <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'login-list' %}">Login</a></li>
+        <li class=" hover:cursor-pointer"><a href="{% url 'register' %}">Register</a></li>
+        <li class=" hover:cursor-pointer"><a href="{% url 'login-list' %}">Login</a></li>
         {% endif %}
         
     </ul>

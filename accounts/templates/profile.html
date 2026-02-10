@@ -3,7 +3,8 @@
 
 
 {% block content %}
-        <div>
+    <div class="max-w-md mx-auto my-12 p-3 bg-white border border-gray-200 shadow-sm rounded-lg">
+        <div class="mb-3 text-2-xl flex font-bold text-center items-center font-[24px]">
             Profile Page
         </div>
         <div>
@@ -11,20 +12,21 @@
         {% if not edit_mode %}
             
             <!--Display-->
-            <div>
-                <!--
+            <div class="space-y-2 flex flex-col items-center gap-6 p-2">
                 {% if request.user.image %}
                 <div>
                     <img loading="lazy" class="bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center" src="{{ request.user.image.url }}" alt="{{ request.user.first_name }}">
                 </div>
-                {% endif %}-->
-                <p class="text-[18px]">Name:{{request.user.first_name}} {{request.user.last_name}}</p>
-                <p>Email:{{request.user.email}} </p>
-                <p>Phone:{{request.user.phone}} </p>
-                <p>Location:{{request.user.location}} </p>
-                <p>Role:{{request.user.role}} </p>
+                {% else %}
+                    <img loading="lazy" class=" ring-4 bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center">
+                {% endif %}
+                <p class="text-[18px]"><strong>Name:</strong> {{request.user.first_name}} {{request.user.last_name}}</p>
+                <p><strong>Email:</strong>: {{request.user.email}} </p>
+                <p><strong>Phone:</strong> {{request.user.phone}} </p>
+                <p><strong>Location:</strong> {{request.user.location}} </p>
+                <p><strong>Role:</strong> {{request.user.role | capfirst }} </p>
             
-                <a href="?edit=1">
+                <a href="?edit=1" class="rounded bg-[#6c9f48] text-white p-2 hover:cursor-pointer">
                     Edit Profile
                 </a>
             </div>
@@ -75,14 +77,15 @@
                         </div>
                         
                     <div class="mb-2 mt-2">
-                    <button type="submit" class="bg-green-600 text-white p-1 rounded">
+                    <button type="submit" class="bg-green-600 text-white p-2 rounded">
                         Update
                     </button>
                     </div>
-                    <a href="{% url 'profile' %}" class="bg-red-600 text-white p-2 rounded w-1/10">Cancel</a>
+                    <a href="{% url 'profile' %}" class="bg-red-600 text-white p-2 rounded w-1/10 text-center">Cancel</a>
                 </div>
             </form>
             {% endif %}
         </div>
+    </div>
 {% endblock content %}
     
