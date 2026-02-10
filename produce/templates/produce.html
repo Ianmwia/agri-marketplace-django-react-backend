@@ -3,19 +3,26 @@
 
 
 {% block content %}
-    <div>Produce</div>
-    <form action="{% url 'produce-list' %}" method='post'>
+    <div class="text-[24px] font-bold mb-3 px-4">Produce</div>
+    <div class="mb-7 bg-white p-3 rounded-lg border-b border border-gray-200 mb-3">
+    <form class="space-y-4" action="{% url 'produce-list' %}" method='post' enctype="multipart/form-data">
         {% csrf_token %}
+        <div class="prose max-w-none">
         {% render_form serializer %}
-        <button type="submit">Create Produce</button>
+        </div>
+        <button class=" w-2/3 mx-auto block rounded-lg p-2 mt-4 shadow-sm text-center text-white bg-green-700 hover:cursor-pointer" type="submit">Create Produce</button>
     </form>
-    <div>
-        <h3>Orders placed</h3>
-        <ul>
+    </div>
+    <div class="bg-white p-3 rounded lg shadow-md border-gray-300">
+        <h3 class=" text-xl font-semibold mb-6 pb-2">Orders placed</h3>
+        <ul class="divide-y divide-gray-100">
         {% for order in orders %}
-        <li>Order #{{order.id }} | {{ order.produce.name }} (Quantity {{order.quantity}})</li>
+        <li class="py-4 flex justify-between items-center rounded-md">
+                <span class="font-medium text-black">Order #{{ order.id }} </span>
+                <span class="font-medium text-black">{{ order.produce.name }}</span>
+                <span class="font-medium text-black">Quantity {{order.quantity}}</span>
            {% empty %} 
-           <li>No orders Placed</li>
+           <li class="py-4 text-gray-500 text-center">No orders Placed</li>
         {% endfor %}
         </ul>
     </div>
