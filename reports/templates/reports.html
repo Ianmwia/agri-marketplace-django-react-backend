@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load rest_framework %}
+
+
+{% block content %}
+    <h1 class="text-[32px] text-center">Farmers Filed Reports</h1>
+    <div>
+        
+        {% for report in reports %}
+            <div>
+                <p>{{report.title}}</p>
+            </div>
+            {% empty %}
+            <p>No available Reports</p>
+        {% endfor %}
+            
+    </div>
+{% endblock content %}
+    
