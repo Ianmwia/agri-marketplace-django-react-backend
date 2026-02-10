@@ -15,8 +15,10 @@ class ProduceSerializer(serializers.ModelSerializer):
 
     farmer = serializers.SlugRelatedField(
         slug_field='email',
-        queryset=User.objects.all(),
-        required = False
+        #queryset=User.objects.all(),
+        required = False,
+        read_only = True,
+        style = {'base_template': 'hidden.html'}
     )
 
     category = serializers.CharField()

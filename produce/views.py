@@ -26,6 +26,16 @@ class ProduceViewSet(viewsets.ModelViewSet):
         # get the farmers produce
         serializer = self.get_serializer()
         orders = Order.objects.filter(produce__farmer=request.user)
+        produce_list = self.get_queryset()
+        return Response({'serializer': serializer, 'orders': orders, 'produce_list':produce_list})
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return self.list(request, *args, **kwargs)
+        
+        orders = Order.objects.filter(produce__farmer=request.user)
         return Response({'serializer': serializer, 'orders': orders})
 
     def get_queryset(self):
