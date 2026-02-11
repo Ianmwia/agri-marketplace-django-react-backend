@@ -4,5 +4,5 @@ from .models import Report
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = '__all__'
-        
+        fields = ['reported_by', 'title', 'description', 'assigned_to']
+        read_only_fields = ['reported_by', 'created_at']
