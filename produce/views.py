@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework import viewsets, permissions, serializers
 from .models import Produce
 from .serializers import ProduceSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from orders.models import Order
+from reports.serializers import ReportSerializer
+from rest_framework.decorators import action
+from accounts.models import CustomUser
 
 # Create your views here.
 
@@ -27,7 +30,9 @@ class ProduceViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer()
         orders = Order.objects.filter(produce__farmer=request.user)
         produce_list = self.get_queryset()
-        return Response({'serializer': serializer, 'orders': orders, 'produce_list':produce_list})
+        report_serializer = ReportSerializer()
+        report_serializer.fields['assigned_to'].queryset = CustomUser.objects.filter(role='agrivet')
+        return Response({'serializer': serializer, 'orders': orders, 'produce_list':produce_list, 'report_serializer':report_serializer})
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -36,7 +41,16 @@ class ProduceViewSet(viewsets.ModelViewSet):
             return self.list(request, *args, **kwargs)
         
         orders = Order.objects.filter(produce__farmer=request.user)
-        return Response({'serializer': serializer, 'orders': orders})
+        report_serializer = ReportSerializer()
+
+        return Response({'serializer': serializer, 'orders': orders, 'report_serializer': report_serializer})
+    
+    @action(detail=False, methods=['post'])
+    def submit_report(self, request):
+        serializer = ReportSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(reported_by=request.user)
+        return redirect('produce-list')
 
     def get_queryset(self):
         '''list all each farmers produce'''
@@ -48,4 +62,5 @@ class ProduceViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(farmer=self.request.user)
+
     

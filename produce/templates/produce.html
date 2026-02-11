@@ -10,7 +10,11 @@
         <div class="prose max-w-none">
         {% render_form serializer %}
         </div>
-        <button class=" w-2/3 mx-auto block rounded-lg p-2 mt-4 shadow-sm text-center text-white bg-green-700 hover:cursor-pointer" type="submit">Create Produce</button>
+        <button class="
+            bg-[#6c9f48] text-white hover:bg-[#4a6d31]
+            p-2 text-[14px] md:text-[16px] lg:text-[18px]
+            rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
+            cursor-pointer" type="submit">Create Produce</button>
     </form>
     </div>
             <div class="bg-white p-3 rounded lg shadow-md border-gray-300 mb-7">
@@ -23,19 +27,29 @@
                         <span class="font-medium text-black">{{ order.produce.name }}</span>
                         <span class="font-medium text-black">Quantity {{order.quantity}}</span>
                         <span class="font-medium text-black">Status {{order.status}}</span>
-                        <button class="bg-red-700 p-2 rounded-lg text-white">red</button>{% if order.status == 'pending' or order.status == 'Pending' %}
+                        
+                        {% if order.status == 'pending' or order.status == 'Pending' %}
                         <div>
                             <!--Accept button-->
                             <form action="{% url 'order-accept' pk=order.id %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <button class="bg-green-700 text-white p-2 rounded-lg" type="submit">Accept</button>
+                                <button class="
+                                    bg-[#6c9f48] text-white hover:bg-[#4a6d31]
+                                    p-2 text-[14px] md:text-[16px] lg:text-[18px]
+                                    rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
+                                    cursor-pointer" type="submit">Accept
+                                </button>
                             </form>
 
                             <!--reject form-->
                             <form action="{% url 'order-reject' pk=order.id %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <input type="text" name="rejection_reason" required>
-                                <button class="bg-red-700 text-white p-2 rounded-lg" type="submit">Reject</button>
+                                <button class="
+            bg-[#6c9f48] text-white hover:bg-[#4a6d31]
+            p-2 text-[14px] md:text-[16px] lg:text-[18px]
+            rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
+            cursor-pointer" type="submit">Reject</button>
                             </form>
                         </div>
                     {% endif %}
@@ -77,6 +91,30 @@
                 
         </ul>
     </div>
-    
+     <!--CREATE A REPORT-->
+    <div class="flex items-center justify-center mb-7 bg-gray-50 py-10 px-4 rounded-lg min-h-screen">
+        <div class="w-full max-w-4xl mb-7 bg-white p-6 md:p-10 rounded shadow-md">
+        <h3 class="font-bold text-[24px] md:text-[30px] mb-6 pb-4 border-b">Report A Farm Issue</h3>
+        <form action="{% url 'produce-submit-report' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="prose max-w-none
+                [&_div]:mb-4 
+                [&_label]:font-semibold [&_label]:mb-2 [&_label]:block [&_label]:after:content-['*']
+                [&_input]:rounded-lg [&_input]:w-full [&_input]:p-3 [&_input]:outline
+                [&_textarea]:rounded-lg [&_textarea]:w-full [&_textarea]:p-3 [&_textarea]:outline
+                [&_select]:w-full [&_select]:outline [&_select]:p-2 [&_select]:rounded [&_select:focus]:border-[#6c9f48] ">
+                {% render_form report_serializer%}
+            </div>
+            <div class="flex justify-center w-full mt-3">
+            <button class="
+            bg-[#6c9f48] text-white hover:bg-[#4a6d31]
+            p-2 text-[14px] md:text-[16px] lg:text-[18px]
+            rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
+            cursor-pointer">Report</button>
+            </div>
+        </form>
+    </div>
+    </div>
+
 {% endblock content %}
     
