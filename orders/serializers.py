@@ -6,11 +6,12 @@ class OrderSerializer(serializers.ModelSerializer):
     Serializer for creating and viewing orders
 
     '''
-    image = serializers.ImageField()
+    image = serializers.ImageField(source='produce.image', read_only=True)
+    produce_name = serializers.ReadOnlyField(source='produce.name')
     class Meta:
         model = Order
         fields = '__all__'
-        read_only_fields = ['buyer', 'status', 'created_at']
+        read_only_fields = ['buyer', 'status', 'created_at', 'rejection_reason']
 
     def create(self, validated_data):
         '''

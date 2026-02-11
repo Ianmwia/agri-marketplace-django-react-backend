@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Order
@@ -79,9 +79,14 @@ class OrderViewSet(viewsets.ModelViewSet):
                 {'error': 'You are not allowed to accept this order'}
             )
         
-        order.status = 'rejected'
-        order.save()
-        return Response({"message": "Order Rejected"})
+        # get reason form
+        reason = request.data.get("rejection_reason", "No reason provided")
+        
+        # delete the order
+        order.delete()
+        
+        #return Response({"message": "Order Rejected", 'reason':reason})
+        return redirect('produce-list')
     
 
     @action(detail=True, methods=['post'])
@@ -96,7 +101,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 {'error': 'You are not allowed to accept this order'}
             )
         
-        # only accepted o
         if order.status != 'accepted':
             return Response(
                 {'error': 'Only accepted Orders can be delivered'}
