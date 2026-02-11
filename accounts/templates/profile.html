@@ -4,15 +4,15 @@
 
 {% block content %}
     <div class="max-w-md mx-auto my-12 p-3 bg-white border border-gray-200 shadow-sm rounded-lg">
-        <div class="mb-3 text-2-xl flex font-bold text-center items-center font-[24px]">
-            Profile Page
+        <div>
+            <p class="mt-2 font-bold text-[24px] text-center mb-2">Profile Page</p>
         </div>
         <div>
         
         {% if not edit_mode %}
             
             <!--Display-->
-            <div class="space-y-2 flex flex-col items-center gap-6 p-2">
+            <div class="space-y-2 flex flex-col items-center gap-3 p-2">
                 {% if request.user.image %}
                 <div>
                     <img loading="lazy" class="bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center" src="{{ request.user.image.url }}" alt="{{ request.user.first_name }}">
@@ -33,57 +33,33 @@
             {% else %}
             <!--edit-->
             <form action="" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="flex flex-col gap-2">
-                        <div>
-                            <label for="">First Name</label>
-                            <input type="text"
-                                    name= 'first_name'
-                                    class="p-2 bg-gray-300 text-white rounded-lg"
-                                    value="{{ serializer.first_name.value }}"
-                            >
-                        </div>
-                        <div>
-                            <label for="">Last Name</label>
-                            <input type="text"
-                                    name= 'last_name'
-                                    class="p-2 bg-gray-300 text-white rounded-lg"
-                                    value="{{ serializer.last_name.value }}"
-                            >
-                        </div>
-                        <div>
-                            <label for="">Location</label>
-                            <input type="text"
-                                    name= 'location'
-                                    class="p-2 bg-gray-300 text-white rounded-lg"
-                                    value="{{ serializer.location.value }}"
-                            >
-                        </div>
-                        <div>
-                            <label for="">Phone</label>
-                            <input type="text"
-                                    name= 'phone'
-                                    class="p-2 bg-gray-300 text-white rounded-lg"
-                                    value="{{ serializer.phone.value }}"
-                            >
-                        </div>
-                        <div>
-                            <label for="">Profile Image</label>
-                            <input type="file"
-                                    name= 'image'
-                                    class="p-2 bg-gray-300 text-white rounded-lg"
-                                    value="{{ serializer.image.value }}"
-                            >
-                        </div>
-                        
-                    <div class="mb-2 mt-2">
-                    <button type="submit" class="bg-green-600 text-white p-2 rounded">
-                        Update
-                    </button>
+                    {% csrf_token %}
+                    
+                    <div class="prose max-w-none mb-3 space-y-2
+                        [&_div]:flex [&_div]:flex-row [&_div]:flex-nowrap [&_div]:gap-4 [&_div]:items-center
+                        [&_label]:block [&_label]:w-32 [&_label]:shrink-0 [&_label]:font-bold [&_label]:mb-1 [&_label]:uppercase
+                        [&_input]:w-full [&_input]:p-2 [&_input]:border [&_input]:rounded-lg [&_input]:cursor-pointer
+
+                        [&_.help-block]:text-red-500 [&_.help-block]:text-[14px]
+
+                        [&_input[type=file]]file:text-white [&_input[type=file]]:p-0 [&_input[type=file]]:file:bg-gray-200 [&_input[type=file]]:border-0 
+                [&_input[type=file]]:file:text-white [&_input[type=file]]:file:rounded-md [&_input[type=file]]:file:cursor-pointer [&_input[type=file]]:file:p-2
+                    ">
+                        {% render_form serializer%}
                     </div>
+                        
+                <div class="flex justify-center w-full mt-3">
+                    <button class="
+                    bg-[#6c9f48] text-white hover:bg-[#4a6d31]
+                    p-2 text-[14px] md:text-[16px] lg:text-[18px]
+                    rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
+                    cursor-pointer">Update</button>
+                </div>
+                <div>
                     <a href="{% url 'profile' %}" class="bg-red-600 text-white p-2 rounded w-1/10 text-center">Cancel</a>
                 </div>
             </form>
+            <!--edit end new-->
             {% endif %}
         </div>
     </div>
