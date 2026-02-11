@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .serializers import RegisterSerializer, LoginSerializer, ProfileUpdateSerializer
 from .models import CustomUser
 from rest_framework.response import Response
@@ -29,8 +29,12 @@ class RegisterViewSet(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Registration Successful', 'serializer': serializer})
+            user = serializer.save()
+
+            login(request, user)
+
+            #return Response({'message': 'Registration Successful', 'serializer': serializer})
+            return redirect('profile')
         return Response({'serializer': serializer, 'errors': serializer.errors})
     
 class LoginViewSet(viewsets.ViewSet):
@@ -47,7 +51,7 @@ class LoginViewSet(viewsets.ViewSet):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'login.html'
 
-    def get(self, request):
+    def list(self, request):
         serializer = LoginSerializer
         return Response({'serializer': serializer})
 
@@ -60,7 +64,7 @@ class LoginViewSet(viewsets.ViewSet):
             #authenticate against django auth system
             user = authenticate(request, email=email, password=password)
             if not user:
-                return Response({'error': "Invalid email or password"})
+                return Response({'serializer':serializer, 'error': "Invalid email or password"})
             
             login(request, user)
 
