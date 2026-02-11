@@ -3,20 +3,35 @@
 
 
 {% block content %}
-    <div class="text-[24px] font-bold mb-3 px-4">Produce</div>
-    <div class="mb-7 bg-white p-3 rounded-lg border-b border border-gray-200 mb-3">
-    <form class="space-y-4" action="{% url 'produce-list' %}" method='post' enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="prose max-w-none">
-        {% render_form serializer %}
-        </div>
-        <button class="
-            bg-[#6c9f48] text-white hover:bg-[#4a6d31]
-            p-2 text-[14px] md:text-[16px] lg:text-[18px]
-            rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
-            cursor-pointer" type="submit">Create Produce</button>
-    </form>
+<div x-data='{tab:"inventory"}' class="p-4">
+    <!--NAVIGATION BUTTONS-->
+    <div class="flex flex-wrap gap-2 mb-6 justify-center">
+        <button @click="tab = 'create'" :class="tab === 'create' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">Create Product</button>
+        <button @click="tab = 'orders'" :class="tab === 'orders' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">View Orders</button>
+        <button @click="tab = 'inventory'" :class="tab === 'inventory' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">View Inventory</button>
+        <button @click="tab = 'report'" :class="tab === 'report' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">File A Report</button>
     </div>
+
+   <!--CREATE PRODUCE SECTION-->
+<div x-show="tab === 'create'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
+    <div class="text-[24px] font-bold mb-3 px-4">Produce</div>
+        <div class="mb-7 bg-white p-3 rounded-lg border-b border border-gray-200 mb-3">
+            <form class="space-y-4" action="{% url 'produce-list' %}" method='post' enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="prose max-w-none">
+                {% render_form serializer %}
+                </div>
+                <button class="
+                    bg-[#6c9f48] text-white hover:bg-[#4a6d31]
+                    p-2 text-[14px] md:text-[16px] lg:text-[18px]
+                    rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
+                    cursor-pointer" type="submit">Create Produce</button>
+            </form>
+        </div>
+</div>
+
+    <!--VIEW LIST OF ORDERS-->
+<div x-show="tab === 'orders'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
             <div class="bg-white p-3 rounded lg shadow-md border-gray-300 mb-7">
                 <h3 class=" text-xl font-semibold mb-6 pb-2">Orders placed</h3>
                 <ul class="divide-y divide-gray-100 space-x-3">
@@ -61,6 +76,10 @@
                 {% endfor %}
                 </ul>
             </div>
+</div>
+
+<!--VIEW PRODUCE YOU AS A FARMER CREATED-->
+<div x-show="tab === 'inventory'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
     <div class="mb-7 bg-white p-6 rounded-sm border">
         <h3 class="text-[24px] font-bold">Your Produce Inventory</h3>
         <ul class="divide-y divide-gray-100">
@@ -91,7 +110,11 @@
                 
         </ul>
     </div>
+</div>
+
+
      <!--CREATE A REPORT-->
+<div x-show="tab === 'report'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
     <div class="flex items-center justify-center mb-7 bg-gray-50 py-10 px-4 rounded-lg min-h-screen">
         <div class="w-full max-w-4xl mb-7 bg-white p-6 md:p-10 rounded shadow-md">
         <h3 class="font-bold text-[24px] md:text-[30px] mb-6 pb-4 border-b">Report A Farm Issue</h3>
@@ -115,6 +138,7 @@
         </form>
     </div>
     </div>
-
+</div>
+</div>
 {% endblock content %}
     
