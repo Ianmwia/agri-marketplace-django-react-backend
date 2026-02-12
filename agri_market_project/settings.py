@@ -135,6 +135,10 @@ APPEND_SLASH = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
 #CUSTOM USER MODEL
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
