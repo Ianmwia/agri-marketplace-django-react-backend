@@ -3,17 +3,34 @@
 
 
 {% block content %}
-    <h1 class="text-[32px] text-center">Farmers Filed Reports</h1>
-    <div>
-        
-        {% for report in reports %}
-            <div>
-                <p>{{report.title}}</p>
-            </div>
-            {% empty %}
-            <p>No available Reports</p>
-        {% endfor %}
-            
+    <h1 class="text-[32px] text-center font-bold mb-2">Farmers Filed Reports</h1>
+    <div class="max-w=4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="border-b bg-[#6c9f48] text-white">
+                <tr>
+                    <th class="p-3 font-bold uppercase tracking-wider">Title</th>
+                    <th class="p-3 font-bold uppercase tracking-wider">Description</th>
+                    <th class="p-3 font-bold uppercase tracking-wider">Reported On</th>
+                    <th class="p-3 font-bold uppercase tracking-wider">Reported By(Farmer)</th>
+                    <th class="p-3 font-bold uppercase tracking-wider">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for report in reports %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 font-bold text-black">{{ report.title }}</td>
+                        <td class="p-3 font-bold text-black">{{ report.description }}</td>
+                        <td class="p-3 font-bold text-black">{{ report.created_at }}</td>
+                        <td class="p-3 font-medium text-black">{{ report.farmer_name|capfirst }}</td>
+                        <td class="p-3 text-center">{{ report.status }}</td>
+                    </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-8 text-center text-gray-500">No Reports Found</td>
+                </tr>
+                {% endfor %}
+            </tbody>    
+        </table>
     </div>
 {% endblock content %}
     
