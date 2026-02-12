@@ -34,6 +34,21 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return Response({'serializer': serializer, 'orders':orders, 'available_produce': available_produce})
     
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return redirect('order-list')
+        
+        orders = self.get_queryset()
+        available_produce = Produce.objects.all()
+        return Response({
+            'serializer': serializer,
+            'orders':orders,
+            'available_produce': available_produce
+        })
+    
     def get_queryset(self):
         #swagger line for mock anon user to 
         if getattr(self, 'swagger_fake_view', False):
