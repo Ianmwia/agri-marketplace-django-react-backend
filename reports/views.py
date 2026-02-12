@@ -13,7 +13,7 @@ from django.shortcuts import redirect
 
 # Create your views here.
 class ReportViewSet(viewsets.ModelViewSet):
-    queryset = Report.objects.all()
+    #queryset = Report.objects.all()
     serializer_class = ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -22,7 +22,11 @@ class ReportViewSet(viewsets.ModelViewSet):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'reports.html'
 
-    def get(self, request):
+    def get_queryset(self):
+        return Report.objects.filter(reported_by=self.request.user).order_by('-created_at')
+
+    def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        return Response({'reports': queryset})
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({'reports': serializer.data})
     
