@@ -1,19 +1,43 @@
 <!DOCTYPE html>
 
-<html>
+<html x-data="{darkMode: localStorage.getItem('theme') === 'dark'}"
+        x-init="$watch('darkMode', value => {
+            if (value) {
+            document.documentElement.classList.add('dark');
+            } else {
+             document.documentElement.classList.remove('dark');
+            }
+            localStorage.setItem('theme', value ? 'dark' : 'light')
+            })"
+        :class="{ 'dark': darkMode}">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>{% block title %} Render Apis Agriculture{% endblock title %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--prevent flash alpine toggle theme-->
+        <script>
+            if (localStorage.getItem('theme') === 'dark'){
+                document.documentElement.classList.add('dark')
+            }
+        </script>
+        <!--tailwind dark mode cdn-->
+        <script>
+            tailwind.config = {
+                darkMode: 'class'
+            }
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style type="text/tailwindcss">
+            @custom-variant dark (&:where(.dark, .dark *));
+        </style>
         <!--alpine js-->
         <script src="https://unpkg.com/alpinejs" defer></script>
         <style> [x-cloak] {display: none !important; }</style>
     </head>
-    <body class="flex flex-col min-h-screen">
-        
+    <body class="flex flex-col min-h-screen bg-white text-black dark:bg-[#23231f] dark:text-[#e8e8e4] transition-colors duration-200">
+
         {% block navbar %}
           {% include 'navbar.html' %}  
         {% endblock navbar %}

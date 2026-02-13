@@ -1,5 +1,5 @@
-<nav>
-    <ul class="flex gap-4 bg-[#6c9f48] text-white p-2 items-center space-x-2">
+<nav x-data="{open: false}">
+    <ul class="flex flex-wrap gap-4 md:flex-nowrap bg-[#6c9f48] text-white p-2 items-center list-none">
         <!--
         <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'register' %}">Register</a></li>
         <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'login-list' %}">Login</a></li>
@@ -11,28 +11,46 @@
         <li class="hover:text-yellow-600 hover:cursor-pointer"><a href="{% url 'produce-list' %}">Produce</a></li>
         {% endif %}
         -->
-        <p class="text-[30px] font-bold">Kilimo AgriMarketplace</p>
-
+        <p class="text-[18px] md:text-[24px] lg:text-[30px] font-bold">Kilimo AgriMarketplace</p>
+        <!--hamburger button using svg -d path -->
+        <button @click="open = !open"
+                class="md:hidden ml-auto p-2 border border-black rounded-lg">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="white" stroke-width="2" viewbox="0 0 24 24">
+                    <path :class="{'hidden': open, 'block': !open }" stroke-linecap="round" d="M4 6h16 M4 12h12 M4 18h10"></path>
+                    <path :class="{'block': open, 'hidden': !open }" class="hidden" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+        </button>
+        <!--wrapped in hamburger-->
+        <div :class="open ? 'flex' : 'hidden'" 
+            class="w-full md:flex md:flex-1 flex-col md:flex-row md:justify-end items-center gap-4">
         {% if user.is_authenticated %}
         <li class=" hover:cursor-pointer"><a href="{% url 'profile' %}">Profile</a></li>
 
         {% if user.role == 'buyer' %}
             <li class="hover:cursor-pointer"><a href="{% url 'order-list' %}">Orders</a></li>
         {% elif user.role == 'agrivet' %}
-            <li class="hover:cursor-pointer"><a href="{% url 'report-list' %}">Orders</a></li>
+            <li class="hover:cursor-pointer"><a href="{% url 'report-list' %}">Reports</a></li>
         {% else %}  
         <li class="hover:cursor-pointer"><a href="{% url 'produce-list' %}">Produce</a></li>
         {% endif %}
 
-        <form action="{% url 'logout'%}" method="post" class="ml-auto mr-3">
+        <form action="{% url 'logout'%}" method="post" class="mx-auto md:mr-3 flex justify centre">
                 {% csrf_token %}
-                <button class=" text-white bg-red-300 rounded-lg p-2 hover:bg-red-600 hover:cursor-pointer" type="submit">Logout</button>
+                <button class=" text-white md:w-auto bg-[#5c9f48] rounded-lg p-2 hover:text-red-500 hover:cursor-pointer" type="submit">Logout</button>
         </form>
-
         {% else %}
+        <div class="flex gap-4 items-center">
         <li class=" hover:cursor-pointer"><a href="{% url 'register' %}">Register</a></li>
         <li class=" hover:cursor-pointer"><a href="{% url 'login-list' %}">Login</a></li>
+        </div>
         {% endif %}
-        
+        <!--toggle dark theme-->
+        <button
+            @click="darkMode = !darkMode;
+            localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
+            x-text="darkMode ? 'Light' : 'Dark' "
+            class="w-20 border rounded-full px-3 py-1 opacity-100 shadow text-md normal-case font-normal bg-indigo-400 text-orange-700 shadow-teal-500/50 bg-transparent border-current text-center">Light ? Dark
+        </button>
+        </div>
     </ul>
 </nav>
