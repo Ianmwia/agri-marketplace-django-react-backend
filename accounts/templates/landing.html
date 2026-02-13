@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navbar %}
+
+{% endblock navbar %}
+
+{% block content %}
+    <!--Hero Section-->
+    <div class="bg-[#6c9f48]/90 -m-2">
+        <div class="min-h-screen flex flex-col md:grid md:grid-cols-2 items-center gap-8 px-8 mb-3">
+            <div class="space-y-4">
+            <p class="flex flex-col text-[30px] text-white">Welcome to <span class="text-[40px] text-[#001b20] font-bold ">KILIMO AGRIMARKETPLACE</span></p>
+            <h1 class="text-[30px] text-[#fa9f00]">Connecting Farm to Table</h1>
+            <p class="text-[16px] text-white">The digital ecosystem for farmers to sell directly, buyers to source fresh produce, and experts to provide support</p>
+            <p class="text-[16px] text-white">We help You Make the Connection directly to your relevant order request</p>
+            </div>
+            <div class="w-full p-2">
+                <img class="rounded-3xl" src="{% static 'images/agri_market.jpg' %}" alt="hello agriculture people">
+            </div>
+        </div>
+        <div class="min-h-screen flex flex-col justify-between p-4 max-w-5xl mx-auto">
+            <p class="text-[30px] font-bold text-center mb-3">Choose Your Role</p>
+            <div class="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="p-3 rounded-lg bg-white flex flex-col gap-3 shadow-[16px_16px_8px_5px_#0a1406]">
+                    <p class="text-[28px] font-semibold">Farmer</p>
+                    <p>Are you A farmer looking to connect directly with a buyer? 
+                        We can make that happen join our platform to get direct access to our buyers market place</p>
+                    <p class="text-[16px]">List Your Harvests, manage orders and get expert advice to grow your business</p>
+                </div>
+                <div class="p-3 rounded-lg bg-white flex flex-col gap-3 shadow-[16px_16px_8px_5px_#0a1406]">
+                    <p class="text-[28px] font-semibold">Buyer</p>
+                    <p>Tired of being hustled by a middleman ? Our centralized marketplace helps you get closer and faster access to 
+                        produce directly from the farms from our network of farmers
+                    </p>
+                    <p class="text-[16px]">Access Fresh, farm to table produce directly from the source at fair prices</p>
+                </div>
+                <div class="p-3 rounded-lg bg-white flex flex-col gap-3 shadow-[16px_16px_8px_5px_#0a1406]">
+                    <p class="text-[28px] font-semibold">Field Officer</p>
+                    <p>Looking to help our available farmers increase their farm yield join u to link directly to our farm network</p>
+                    <p class="text-[16px] whitespace-normal break-words">Provide Technical Support and help farmers solve real-world agricultural issues</p>
+                </div>
+
+            </div>
+            <div class="flex flex-col space-y-3 justify-center items-center">
+            <p class="font-bold text-white text-[48px]">Join Now and get Started</p>
+            <a class="bg-[#fa9f00] p-2 text-white font-semibold rounded-lg hover:text-[scale-102] hover:cursor-pointer" href="{% url 'register' %}">Register</a>
+        </div>
+        </div>
+    </div>
+{% endblock content %}
