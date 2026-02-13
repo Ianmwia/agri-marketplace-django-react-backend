@@ -12,6 +12,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 
 # Create your views here.
+#landing page
+def landing(request):
+    return render(request, 'landing.html')
+
 #class based Api Views
 class RegisterViewSet(APIView):
     permission_classes = []
