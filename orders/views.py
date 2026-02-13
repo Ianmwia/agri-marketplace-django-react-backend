@@ -30,7 +30,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         orders = self.get_queryset()
 
         #get available produce so a buyer can select an item
-        available_produce = Produce.objects.all()
+        available_produce = Produce.objects.filter(quantity__gt=0)
 
         return Response({'serializer': serializer, 'orders':orders, 'available_produce': available_produce})
     

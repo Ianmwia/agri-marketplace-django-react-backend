@@ -25,5 +25,9 @@ class Order(models.Model):
     #add rejection reason
     rejection_reason = models.TextField(_("reason for rejection"), blank=True, null=True)
 
+    @property
+    def total_amount(self):
+        return self.produce.price * self.quantity
+
     def __str__(self):
         return f'Order #{self.id} - {self.produce.name}'
