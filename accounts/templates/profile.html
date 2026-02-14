@@ -3,7 +3,7 @@
 
 
 {% block content %}
-    <div class="max-w-md mx-auto my-12 p-3 bg-white border border-gray-200 shadow-sm rounded-lg">
+    <div class="max-w-md mx-auto my-12 p-3 bg-white dark:bg-[#23231f] text-black dark:text-[#e8e8e4] border border-gray-200 shadow-sm rounded-lg">
         <div>
             <p class="mt-2 font-bold text-[24px] text-center mb-2">Profile Page</p>
         </div>
@@ -53,7 +53,7 @@
                     bg-[#6c9f48] text-white hover:bg-[#4a6d31]
                     p-2 text-[14px] md:text-[16px] lg:text-[18px]
                     rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
-                    cursor-pointer">Update</button>
+                    cursor-pointer mb-[12px]">Update</button>
                 </div>
                 <div>
                     <a href="{% url 'profile' %}" class="bg-red-600 text-white p-2 rounded w-1/10 text-center">Cancel</a>
