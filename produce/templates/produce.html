@@ -14,7 +14,7 @@
 
    <!--CREATE PRODUCE SECTION-->
 <div x-show="tab === 'create'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
-    <div class="text-[24px] font-bold mb-3 px-4">Produce</div>
+    <div class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 px-4 mb-3 border-b">Produce</div>
         <div class="mb-7 bg-white p-3 rounded-lg border-b border border-gray-200">
             <form class="space-y-4" action="{% url 'produce-list' %}" method='post' enctype="multipart/form-data">
                 {% csrf_token %}
@@ -45,8 +45,8 @@
 <div x-show="tab === 'orders'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
             <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
             <div class="bg-white p-4 border-b">
-                <h3 class=" text-xl font-semibold mb-6 pb-2">Orders placed</h3>
-                <h3 class=" text-xl font-semibold mb-6 pb-2">Manage your pending produce requests</h3>
+                <h3 class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 border-b">Orders placed</h3>
+                <h3 class=" text-md font-semibold mb-2 pb-2">Manage your pending produce requests</h3>
             </div>
 
             <ul class="divide-y divide-gray-100">
@@ -105,23 +105,23 @@
 <!--VIEW PRODUCE YOU AS A FARMER CREATED-->
 <div x-show="tab === 'inventory'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
     <div class="w-full max-w-4xl mb-7 bg-white p-6 md:p-10 rounded shadow-md">
-        <h3 class="text-[24px] font-bold">Your Produce Inventory</h3>
+        <h3 class="text-[24px] text-[#663399] font-bold">Your Produce Inventory</h3>
         <ul class="divide-y divide-gray-100">
             
             {% for produce in produce_list %}
                 <li class="py-4 flex justify-between items-center">
                     <div>
-                        <span class="font-bold block text-sm py-2"><span class="text-gray-400">Name: </span>{{ produce.name }}</span>
-                        <span class="font-bold block text-sm"><span class="text-gray-400">Category: </span>{{ produce.category }}</span>
+                        <span class="font-bold block text-sm py-2"><span class="text-black">Name: </span>{{ produce.name }}</span>
+                        <span class="font-bold block text-sm"><span class="text-black">Category: </span>{{ produce.category }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-bold block text-sm py-2"><span class="text-gray-400">Price: </span>{{ produce.price }}</span>
-                        <span class="font-bold block text-sm text-gray-200"><span class="text-gray-400">Quantity: </span>{{ produce.quantity }}</span>
+                        <span class="font-bold block text-sm py-2"><span class="text-gray-400">Price per Kilo: </span>{{ produce.price }}</span>
+                        <span class="font-bold block text-sm text-gray-200"><span class="text-gray-400">Quantity: </span class="text-black">{{ produce.quantity }}</span>
                     </div>
                     <div>
                 {% if produce.image %}
                 <div>
-                    <img loading="lazy" class="bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center" src="{{ produce.image.url }}" >
+                    <img loading="lazy" class="bg-gray-300 h-[196px] w-[196px] rounded-lg object-cover object-center" src="{{ produce.image.url }}" >
                 </div>
                 {% else %}
                     <div class="bg-gray-300 h-[96px] w-[96px] rounded-full flex object-cover object-center items-center justify-center">
@@ -143,7 +143,7 @@
 <div x-show="tab === 'report'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
     <div class="flex items-center justify-center mb-7 bg-gray-50 py-10 px-4 rounded-lg min-h-screen">
         <div class="w-full max-w-4xl mb-7 bg-white p-6 md:p-10 rounded shadow-md">
-        <h3 class="font-bold text-[24px] md:text-[30px] mb-6 pb-4 border-b">Report A Farm Issue</h3>
+        <h3 class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 border-b">Report A Farm Issue</h3>
         <form action="{% url 'produce-submit-report' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="prose max-w-none
