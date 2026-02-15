@@ -16,12 +16,18 @@
                         [&_div]:mb-3
                         [&_label]:block [&_label]:font-bold [&_label]:mb-1 [&_label]:uppercase
                         [&_input]:w-full [&_input]:p-2 [&_input]:border [&_input]:rounded-lg [&_input]:cursor-pointer
-                        [&_select]:w-full [&_select]:p-2 [&_select]:border [&_select]:rounded-lg [&_select]:bg-white [&_select]:cursor-pointer
+                        [&_select]:w-full [&_select]:p-2 [&_select]:border [&_select]:rounded-lg [&_select]:bg-[#23231f] [&_select]:cursor-pointer
                         
                         [&_.help-block]:text-red-500 [&_.help-block]:text-[14px]
                         
                     ">
                         {% render_form serializer%}
+                        <span
+                        onclick="const p=this.previousElementSibling.querySelector('input[name=password]');
+                        p.type=p.type==='password'?'text':'password'"
+                        class="text-[12px] cursor-pointer text-gray-400 block text-right"
+                        >
+                        </span>
                     </div>
                         
                 <div class="flex justify-center w-full mt-3">
