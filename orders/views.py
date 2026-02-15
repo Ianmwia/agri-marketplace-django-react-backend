@@ -97,8 +97,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         # get reason form
         reason = request.data.get("rejection_reason", "No reason provided")
         
-        # delete the order
-        order.delete()
+        # reject the order
+        if order.status != 'rejected':
+            #give the farmer back the stock
+            produce = order.produce
+            produce.quantity += order.quantity
+            produce.save()
+
+            reason = order.rejection_reason = request.data.get("reason")
+            order.status = 'rejected'
+            order.rejection_reason = reason
+            order.save()
         
         #return Response({"message": "Order Rejected", 'reason':reason})
         return redirect('produce-list')
