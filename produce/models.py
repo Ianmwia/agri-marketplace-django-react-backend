@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from cloudinary.models import CloudinaryField
+from django.core.validators import MinValueValidator
 
 
 # Create your models here.
@@ -21,7 +22,7 @@ class Produce(models.Model):
     image = CloudinaryField("product image", blank=True)
     description = models.TextField(_("produce description"))
     quantity = models.PositiveIntegerField(_("amount of produce"))
-    price = models.DecimalField(_("price of produce"), max_digits=10, decimal_places=2)
+    price = models.DecimalField(_("price of produce"), max_digits=10, decimal_places=2, validators=[MinValueValidator(300, "minimum price is 300")])
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
