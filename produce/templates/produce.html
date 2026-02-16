@@ -10,12 +10,13 @@
         <button @click="tab = 'orders'" :class="tab === 'orders' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">View Orders</button>
         <button @click="tab = 'inventory'" :class="tab === 'inventory' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">View Inventory</button>
         <button @click="tab = 'report'" :class="tab === 'report' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">File A Report</button>
+        <button @click="tab = 'report-filed'" :class="tab === 'report-filed' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">Reports Filed</button>
     </div>
 
    <!--CREATE PRODUCE SECTION-->
-<div x-show="tab === 'create'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
-    <div class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 px-4 mb-3 border-b">Produce</div>
-        <div class="mb-7 bg-white p-3 rounded-lg border-b border border-gray-200">
+<div x-show="tab === 'create'" x-cloak class="mb-7 p-6 rounded-lg">
+    <div class="font-bold dark:bg-[#23231f] dark:text-white text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 px-4 mb-3 border-b">Produce</div>
+        <div class="mb-7 dark:bg-gray-300 dark:text-black p-3 rounded-lg border-b border border-gray-200">
             <form class="space-y-4" action="{% url 'produce-list' %}" method='post' enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="prose max-w-none
@@ -42,9 +43,9 @@
 </div>
 
     <!--VIEW LIST OF ORDERS-->
-<div x-show="tab === 'orders'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
-            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="bg-white p-4 border-b">
+<div x-show="tab === 'orders'" x-cloak class="mb-7 p-6 rounded-lg">
+            <div class="max-w-4xl mx-auto dark:bg-gray-300 dark:text-white rounded-lg shadow-md overflow-hidden">
+            <div class="dark:bg-gray-300 dark:text-black p-4 border-b">
                 <h3 class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 border-b">Orders placed</h3>
                 <h3 class=" text-md font-semibold mb-2 pb-2">Manage your pending produce requests</h3>
             </div>
@@ -103,8 +104,8 @@
 </div>
 
 <!--VIEW PRODUCE YOU AS A FARMER CREATED-->
-<div x-show="tab === 'inventory'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
-    <div class="w-full max-w-4xl mb-7 bg-white p-6 md:p-10 rounded shadow-md">
+<div x-show="tab === 'inventory'" x-cloak class="mb-7 p-6 rounded-lg">
+    <div class="w-full max-w-4xl mb-7 dark:bg-gray-300 dark:bg-[#23231f] dark:text-white p-6 md:p-10 rounded shadow-md">
         <h3 class="text-[24px] text-[#663399] font-bold">Your Produce Inventory</h3>
         <ul class="divide-y divide-gray-100">
             
@@ -115,8 +116,8 @@
                         <span class="font-bold block text-sm"><span class="text-black">Category: </span>{{ produce.category }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-bold block text-sm py-2"><span class="text-gray-400">Price per Kilo: </span>{{ produce.price }}</span>
-                        <span class="font-bold block text-sm text-gray-200"><span class="text-gray-400">Quantity: </span class="text-black">{{ produce.quantity }}</span>
+                        <span class="font-bold block text-sm py-2"><span class="dark:text-black">Price per Kilo: </span>Ksh {{ produce.price }}</span>
+                        <span class="font-bold block text-sm text-gray-200"><span class="dark:text-black">Quantity in Kilograms: </span class="dark:text-white">{{ produce.quantity }}</span>
                     </div>
                     <div>
                 {% if produce.image %}
@@ -140,9 +141,9 @@
 
 
      <!--CREATE A REPORT-->
-<div x-show="tab === 'report'" x-cloak class="mb-7 bg-white p-6 rounded-lg">
-    <div class="flex items-center justify-center mb-7 bg-gray-50 py-10 px-4 rounded-lg min-h-screen">
-        <div class="w-full max-w-4xl mb-7 bg-white p-6 md:p-10 rounded shadow-md">
+<div x-show="tab === 'report'" x-cloak class="mb-7 p-6 rounded-lg">
+    <div class="flex items-center justify-center dark:bg-[#23231f] dark:text-white mb-7 bg-gray-50 py-10 px-4 rounded-lg min-h-screen">
+        <div class="w-full max-w-4xl mb-7 dark:bg-gray-300 dark:text-black p-6 md:p-10 rounded shadow-md">
         <h3 class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 border-b">Report A Farm Issue</h3>
         <form action="{% url 'produce-submit-report' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -162,6 +163,40 @@
             cursor-pointer">Report</button>
             </div>
         </form>
+    </div>
+    </div>
+</div>
+
+    <!--SHOW REPORTS CREATED-->
+<div x-show="tab === 'report-filed'" x-cloak class="mb-7 p-6 rounded-lg">
+    <div class="flex items-center dark:bg-[#23231f] dark:text-white justify-center mb-7 bg-gray-50 py-10 px-4 rounded-lg min-h-screen">
+        <div class="w-full max-w-4xl mb-7 dark:bg-gray-300 dark:text-black p-6 md:p-10 rounded shadow-md">
+        <h3 class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 border-b">Reports Filed</h3>
+            <ul class="divide-y divide-gray-100">
+
+                {% for report in reports %}
+                <li class="p-4 mb-3 flex flex-col justify-between items-center rounded-md lg:flex-row lg:items-center justify-between gap-3">
+                    <div class="flex-1 space-y-1">
+
+                        <div class="flex flex-col items-center gap-2">
+                            <span class="font-medium">TITLE: {{ report.title }} </span>
+                            <span class="font-medium">DATE CREATED: {{ report.created_at|date:"d M Y" }}</span>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:gap-2 items-center">
+                        <span class="font-medium">DESCRIPTION: {{report.description}}</span>
+                        </div>
+
+                        <div class="flex flex-col lg:text-center items-center">
+                        <span class="font-medium">STATUS: {{report.status}}</span>
+                        <span class="font-medium">OFFICER: {{report.assigned_to}}</span>
+                        </div>
+                    </div>
+                </li>
+                {% empty %} 
+                <li class="py-4 text-gray-500 text-center">No Reports Filed Yet</li>
+                {% endfor %}
+                </ul>
     </div>
     </div>
 </div>
