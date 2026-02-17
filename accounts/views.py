@@ -77,7 +77,7 @@ class LoginViewSet(viewsets.ViewSet):
                 return redirect('produce-list')
             elif user.role == 'buyer':
                 return redirect('order-list')
-            elif user.role == 'agrivet':
+            elif user.role == 'agrovet':
                 return redirect('report-list')
 
             return redirect('profile')

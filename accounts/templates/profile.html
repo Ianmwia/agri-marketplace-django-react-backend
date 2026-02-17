@@ -3,7 +3,7 @@
 
 
 {% block content %}
-    <div class="max-w-md mx-auto my-12 p-3 bg-white dark:bg-[#23231f] text-black dark:text-[#e8e8e4] border border-gray-200 shadow-sm rounded-lg">
+    <div class="max-w-md mx-auto my-12 p-3 bg-white dark:bg-gray-300 text-black dark:text-black border border-gray-200 shadow-sm rounded-lg">
         <div>
             <p class="mt-2 font-bold text-[24px] text-center mb-2">Profile Page</p>
         </div>
@@ -18,7 +18,7 @@
                     <img loading="lazy" class="bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center" src="{{ request.user.image.url }}" alt="{{ request.user.first_name }}">
                 </div>
                 {% else %}
-                    <img loading="lazy" class=" ring-4 bg-gray-300 h-[96px] w-[96px] rounded-full object-cover object-center">
+                    <img loading="lazy" class="bg-gray-300 dark:bg-white h-[96px] w-[96px] rounded-full object-cover object-center">
                 {% endif %}
                 <p class="text-[18px]"><strong>Name:</strong> {{request.user.first_name}} {{request.user.last_name}}</p>
                 <p><strong>Email:</strong>: {{request.user.email}} </p>

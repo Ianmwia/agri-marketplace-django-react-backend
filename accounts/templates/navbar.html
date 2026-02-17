@@ -28,7 +28,7 @@
 
         {% if user.role == 'buyer' %}
             <li class="hover:cursor-pointer"><a href="{% url 'order-list' %}">Orders</a></li>
-        {% elif user.role == 'agrivet' %}
+        {% elif user.role == 'agrovet' %}
             <li class="hover:cursor-pointer"><a href="{% url 'report-list' %}">Reports</a></li>
         {% else %}  
         <li class="hover:cursor-pointer"><a href="{% url 'produce-list' %}">Produce</a></li>

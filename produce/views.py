@@ -34,7 +34,7 @@ class ProduceViewSet(viewsets.ModelViewSet):
 
         reports = Report.objects.filter(reported_by=request.user).order_by('-created_at')
         report_serializer = ReportSerializer()
-        report_serializer.fields['assigned_to'].queryset = CustomUser.objects.filter(role='agrivet')
+        report_serializer.fields['assigned_to'].queryset = CustomUser.objects.filter(role='agrovet')
         return Response({'serializer': serializer, 'orders': orders, 'produce_list':produce_list, 'report_serializer':report_serializer, 'reports': reports})
     
     def create(self, request, *args, **kwargs):

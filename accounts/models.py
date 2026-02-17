@@ -36,7 +36,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('farmer', 'Farmer'),
         ('buyer','Buyer'),
         ('admin','Admin'),
-        ('agrivet','AgriVet'),
+        ('agrovet','AgroVet'),
     )
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)

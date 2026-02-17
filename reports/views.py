@@ -23,10 +23,15 @@ class ReportViewSet(viewsets.ModelViewSet):
     template_name = 'reports.html'
 
     def get_queryset(self):
+        user = self.request.user
+
+        if hasattr(user, 'role') and user.role == 'agrovet':
+            return Report.objects.filter(assigned_to=self.request.user).order_by('-created_at')
+        
         return Report.objects.filter(reported_by=self.request.user).order_by('-created_at')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'reports': serializer.data})
+        #serializer = self.get_serializer(queryset, many=True)
+        return Response({'reports': queryset})
     
