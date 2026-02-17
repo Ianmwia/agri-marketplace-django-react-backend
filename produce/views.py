@@ -8,6 +8,7 @@ from orders.models import Order
 from reports.serializers import ReportSerializer
 from rest_framework.decorators import action
 from accounts.models import CustomUser
+from reports.models import Report
 
 # Create your views here.
 
@@ -30,9 +31,11 @@ class ProduceViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer()
         orders = Order.objects.filter(produce__farmer=request.user)
         produce_list = self.get_queryset()
+
+        reports = Report.objects.filter(reported_by=request.user).order_by('-created_at')
         report_serializer = ReportSerializer()
         report_serializer.fields['assigned_to'].queryset = CustomUser.objects.filter(role='agrivet')
-        return Response({'serializer': serializer, 'orders': orders, 'produce_list':produce_list, 'report_serializer':report_serializer})
+        return Response({'serializer': serializer, 'orders': orders, 'produce_list':produce_list, 'report_serializer':report_serializer, 'reports': reports})
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
