@@ -20,6 +20,12 @@
                         [&_.help-block]:text-red-500 [&_.help-block]:text-[14px]
                     ">
                         {% render_form serializer%}
+                        <span
+                        onclick="const p=this.previousElementSibling.querySelector('input[name=password]');
+                        p.type=p.type==='password'?'text':'password'"
+                        class="text-[12px] cursor-pointer text-gray-400 block text-right"
+                        >
+                        </span>
                     </div>
                         
                 <div class="flex justify-center w-full mt-3">
