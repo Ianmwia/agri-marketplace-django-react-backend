@@ -3,7 +3,7 @@
 
 
 {% block content %}
-<div x-data='{tab:"inventory"}' class="p-4">
+<div x-data='{tab:"inventory"}' class="p-2 md:p-4 lg:p-6">
     <!--NAVIGATION BUTTONS-->
     <div class="flex flex-wrap gap-2 mb-6 justify-center">
         <button @click="tab = 'create'" :class="tab === 'create' ? 'bg-[#4a6d31] text-white' : 'bg-gray-200 text-black'" class="p-3 rounded font-bold cursor-pointer">Create Product</button>
@@ -43,7 +43,7 @@
 </div>
 
     <!--VIEW LIST OF ORDERS-->
-<div x-show="tab === 'orders'" x-cloak class="mb-7 p-6 rounded-lg">
+<div x-show="tab === 'orders'" x-cloak class="mb-7 sm:p-2 lg:p-6 rounded-lg">
             <div class="max-w-4xl mx-auto dark:bg-gray-300 dark:text-white rounded-lg shadow-md overflow-hidden">
             <div class="dark:bg-gray-300 dark:text-black p-4 border-b">
                 <h3 class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 border-b">Orders placed</h3>
@@ -69,13 +69,14 @@
 
                         </div>
                         {% if order.status == 'pending' or order.status == 'Pending' %}
-                        <div class="flex flex-1 flex-col md:flex-row items-center gap-2 justify-between">
+                        <div class="flex flex-1 flex-col items-center gap-2 justify-between">
                             <!--Accept button-->
                             <form action="{% url 'order-accept' pk=order.id %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <button class="
                                     bg-[#6c9f48] text-white hover:bg-[#4a6d31]
                                     p-2 text-[14px] md:text-[16px] lg:text-[18px]
+                                    md:w-[90px]
                                     rounded w-full sm:w-3/4 md:w-1/2 lg:w-[200px]
                                     cursor-pointer" type="submit">Accept
                                 </button>
@@ -84,7 +85,7 @@
                             <!--reject form-->
                             <form action="{% url 'order-reject' pk=order.id %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <input  class="rounded-lg p-2 w-[200px] outline" type="text" name="rejection_reason" placeholder="reject with a reason" required>
+                                <input  class="rounded-lg p-2 mb-2 w-[200px] outline" type="text" name="rejection_reason" placeholder="reject with a reason" required>
                                 <button class="
                                         bg-[#6c9f48] text-white hover:bg-[#4a6d31]
                                         p-2 text-[14px] md:text-[16px] lg:text-[18px]
@@ -104,24 +105,24 @@
 </div>
 
 <!--VIEW PRODUCE YOU AS A FARMER CREATED-->
-<div x-show="tab === 'inventory'" x-cloak class="mb-7 p-6 rounded-lg">
-    <div class="w-full max-w-4xl mb-7 dark:bg-gray-300 dark:bg-[#23231f] dark:text-white p-6 md:p-10 rounded shadow-md">
-        <h3 class="text-[24px] text-[#663399] font-bold">Your Produce Inventory</h3>
+<div x-show="tab === 'inventory'" x-cloak class="mb-7 md:p-6 rounded-lg">
+    <div class="w-full max-w-4xl mb-7 dark:bg-gray-300 dark:bg-[#23231f] dark:text-white p-2 md:p-6 md:p-10 rounded shadow-md">
+        <h3 class="text-[24px] text-[#663399] font-bold text-center">Your Produce Inventory</h3>
         <ul class="divide-y divide-gray-100">
             
             {% for produce in produce_list %}
-                <li class="py-4 flex justify-between items-center">
+                <li class="py-4 flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                     <div>
                         <span class="font-bold block text-sm py-2"><span class="text-black">Name: </span>{{ produce.name }}</span>
                         <span class="font-bold block text-sm"><span class="text-black">Category: </span>{{ produce.category }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-bold block text-sm py-2"><span class="dark:text-black">Price per Kilo: </span>Ksh {{ produce.price }}</span>
-                        <span class="font-bold block text-sm text-gray-200"><span class="dark:text-black">Quantity in Kilograms: </span class="dark:text-white">{{ produce.quantity }}</span>
+                        <span class="font-bold block text-sm "><span class="dark:text-black">Quantity in Kilograms: </span class="dark:text-white">{{ produce.quantity }}KG</span>
                     </div>
                     <div>
                 {% if produce.image %}
-                <div>
+                <div class="flex items-center justify-center">
                     <img loading="lazy" class="bg-gray-300 h-[196px] w-[196px] rounded-lg object-cover object-center" src="{{ produce.image.url }}" >
                 </div>
                 {% else %}
@@ -141,9 +142,9 @@
 
 
      <!--CREATE A REPORT-->
-<div x-show="tab === 'report'" x-cloak class="mb-7 p-6 rounded-lg">
+<div x-show="tab === 'report'" x-cloak class="mb-7 p-2 rounded-lg">
     <div class="flex items-center justify-center dark:bg-[#23231f] dark:text-white mb-7 bg-gray-50 py-10 px-4 rounded-lg min-h-screen">
-        <div class="w-full max-w-4xl mb-7 dark:bg-gray-300 dark:text-black p-6 md:p-10 rounded shadow-md">
+        <div class="w-full max-w-4xl mb-7 dark:bg-gray-300 dark:text-black p-2 md:p-10 rounded shadow-md">
         <h3 class="font-bold text-[#663399] text-[24px] md:text-[30px] mb-6 pb-4 border-b">Report A Farm Issue</h3>
         <form action="{% url 'produce-submit-report' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -179,17 +180,17 @@
                     <div class="flex-1 space-y-1">
 
                         <div class="flex flex-col items-center gap-2">
-                            <span class="font-medium">TITLE: {{ report.title }} </span>
-                            <span class="font-medium">DATE CREATED: {{ report.created_at|date:"d M Y" }}</span>
+                            <span class="font-medium"><span class="text-[#663399]">TITLE: </span>{{ report.title }} </span>
+                            <span class="font-medium"><span class="text-[#663399]">DATE CREATED: </span>{{ report.created_at|date:"d M Y" }}</span>
                         </div>
 
                         <div class="flex flex-col sm:flex-row sm:gap-2 items-center">
-                        <span class="font-medium">DESCRIPTION: {{report.description}}</span>
+                        <span class="font-medium"><span class="text-[#663399]">DESCRIPTION: </span>{{report.description}}</span>
                         </div>
 
                         <div class="flex flex-col lg:text-center items-center">
-                        <span class="font-medium">STATUS: {{report.status}}</span>
-                        <span class="font-medium">OFFICER: {{report.assigned_to}}</span>
+                        <span class="font-medium"><span class="text-[#663399]">STATUS: </span>{{report.status}}</span>
+                        <span class="font-medium"><span class="text-[#663399]">OFFICER: </span>{{report.assigned_to}}</span>
                         </div>
                     </div>
                 </li>

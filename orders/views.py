@@ -79,7 +79,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         
         order.status = 'accepted'
         order.save()
-        return Response({"message": "Order Accepted"})
+        #return Response({"message": "Order Accepted"})
+        return redirect('produce-list')
     
 
     @action(detail=True, methods=['post'])
