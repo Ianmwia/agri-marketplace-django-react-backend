@@ -9,7 +9,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'password','role', 'location']
+        fields = ['first_name', 'last_name', 'email', 'password','role', 'field', 'location']
+
+    def validate(self, data):
+        role = data.get('role')
+        field = data.get('field')
+
+
+        if role == 'field_officer' and not field:
+            raise serializers.ValidationError(
+                f'Users with the role Field Officer must Select a Field of expert'
+            )
+        return data
 
     def validate_password(self, data):
         if len(data) < 8:

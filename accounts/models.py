@@ -36,13 +36,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('farmer', 'Farmer'),
         ('buyer','Buyer'),
         ('admin','Admin'),
-        ('agrovet','AgroVet'),
+        ('field_officer','Field Officer'),
+    )
+    FIELDS = (
+        ('animals', 'Livestock and Veterinary'),
+        ('soil', 'Soil and Crops'),
+        ('machinery', 'Machinery'),
     )
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
     email = models.EmailField(_("email address"), unique=True)
     role = models.CharField(max_length=30, choices=ROLES, default='buyer')
-    phone = models.CharField(_("phone number"), max_length=90, blank=True)
+    field = models.CharField(_("fields"), max_length=30, choices=FIELDS, null=True, blank=True)
+    phone = models.CharField(_("phone number"), max_length=20, blank=True)
     location = models.CharField(_("location"), max_length=100)
     date_joined = models.DateTimeField(_("date joined"), auto_now_add=True)
     image = CloudinaryField(blank=True)
@@ -56,4 +62,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.role}"
+        return f"{self.first_name} {self.last_name} - {self.role} - {self.get_field_display()}"

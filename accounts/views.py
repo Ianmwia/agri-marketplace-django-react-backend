@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect
 from .serializers import RegisterSerializer, LoginSerializer, ProfileUpdateSerializer
 from .models import CustomUser
 from rest_framework.response import Response
-from rest_framework import viewsets, serializers
+from rest_framework import viewsets, serializers, status
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from drf_yasg.utils import swagger_auto_schema
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
@@ -19,17 +20,20 @@ def landing(request):
 #class based Api Views
 class RegisterViewSet(APIView):
     permission_classes = []
-    serializer_class = RegisterSerializer 
+    serializer_class = RegisterSerializer
     #only post no get
 
     #http render in django
-    renderer_classes = [TemplateHTMLRenderer]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'register.html'
 
     def get(self, request):
-        serializer = RegisterSerializer
-        return Response({'serializer': serializer})
-    
+        serializer = RegisterSerializer(data=request.data)
+        if request.accepted_renderer.format == 'html':
+            return Response({'serializer': serializer})
+        
+        return Response("use post to register")
+    @swagger_auto_schema(request_body=RegisterSerializer)
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -37,9 +41,16 @@ class RegisterViewSet(APIView):
 
             login(request, user)
 
+            if request.accepted_renderer.format == 'html':
+                return redirect('profile')
+            return Response(serializer.data)
+
             #return Response({'message': 'Registration Successful', 'serializer': serializer})
-            return redirect('profile')
-        return Response({'serializer': serializer, 'errors': serializer.errors})
+           
+        if request.accepted_renderer.format == 'html':
+            return Response({'serializer': serializer})
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class LoginViewSet(viewsets.ViewSet):
     '''
@@ -77,7 +88,7 @@ class LoginViewSet(viewsets.ViewSet):
                 return redirect('produce-list')
             elif user.role == 'buyer':
                 return redirect('order-list')
-            elif user.role == 'agrovet':
+            elif user.role == 'field_officer':
                 return redirect('report-list')
 
             return redirect('profile')
