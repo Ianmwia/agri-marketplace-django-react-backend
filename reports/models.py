@@ -13,7 +13,7 @@ class Report(models.Model):
         ('resolved','Resolved')
     )
     reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='report')
-    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='assigned_tasks', null=True, blank=True)
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='assigned_tasks', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(_(""), max_length=50)
     description = models.TextField(_(""))
