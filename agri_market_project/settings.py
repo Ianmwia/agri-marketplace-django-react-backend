@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'orders',
     'reports',
     'drf_yasg',
+    'services',
 ]
 
 MIDDLEWARE = [
@@ -146,3 +147,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = 'profile' # HOME
 LOGOUT_REDIRECT_URL = 'login-list'
+
+SWAGGER_SETTINGS = {
+    'LOGOUT_URL' : '/logout/',
+}

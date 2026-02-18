@@ -42,6 +42,7 @@ urlpatterns = [
     path('api/', include('produce.urls')),
     path('api/', include('orders.urls')),
     path('api/', include('reports.urls')),
+    path('api/', include('services.urls')),
 
     #swagger api patters
     path('swagger.<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
