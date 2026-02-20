@@ -4,7 +4,7 @@ from .models import CustomUser
 from rest_framework.response import Response
 from rest_framework import viewsets, serializers, status
 from rest_framework.views import APIView
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from drf_yasg.utils import swagger_auto_schema
@@ -16,6 +16,15 @@ from django.shortcuts import redirect
 #landing page
 def landing(request):
     return render(request, 'landing.html')
+
+#react select dropdown
+@api_view(["GET"])
+def user_choices(request):
+    return Response({
+        'roles' : [role[0] for role in CustomUser.ROLES],
+        'fields' : [field[0] for field in CustomUser.FIELDS]
+    })
+
 
 #class based Api Views
 class RegisterViewSet(APIView):
@@ -63,11 +72,11 @@ class LoginViewSet(viewsets.ViewSet):
     serializer_class = LoginSerializer
 
      #http render in django
-    renderer_classes = [TemplateHTMLRenderer]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'login.html'
 
     def list(self, request):
-        serializer = LoginSerializer
+        serializer = LoginSerializer()
         return Response({'serializer': serializer})
 
     def create(self, request):
@@ -79,33 +88,40 @@ class LoginViewSet(viewsets.ViewSet):
             #authenticate against django auth system
             user = authenticate(request, email=email, password=password)
             if not user:
-                return Response({'serializer':serializer, 'error': "Invalid email or password"})
-            
+                if request.accepted_render.format == 'html':
+                    return Response({'serializer': serializer, 'error': "Invalid email or password"})
+                return Response({'error': "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
             login(request, user)
 
             #redirect based on role
-            if user.role == 'farmer':
-                return redirect('produce-list')
-            elif user.role == 'buyer':
-                return redirect('order-list')
-            elif user.role == 'field_officer':
-                return redirect('report-list')
+            if request.accepted_renderer.format == 'html':
+                if user.role == 'farmer':
+                    return redirect('produce-list')
+                elif user.role == 'buyer':
+                    return redirect('order-list')
+                elif user.role == 'field_officer':
+                    return redirect('report-list')
 
-            return redirect('profile')
+                return redirect('profile')
             
-            # return Response({
-            #     'id': user.id,
-            #     'message': 'Login Successful',
-            #     'role': user.role,
-            #     'email': user.email,
-            # })
-        return Response({ 'serializer': serializer, 'errors' :serializer})
-    
+            #axios react redirect
+            return Response({
+                'id': user.id,
+                'message': 'Login Successful',
+                'role': user.role,
+                'email': user.email,
+            }, status=status.HTTP_200_OK)
+        
+        if request.accepted_render.format == 'html':
+            return Response({'serializer': serializer, 'error': "Invalid email or password"})
+        return Response({'error': "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     #http render in django
-    renderer_classes = [TemplateHTMLRenderer]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'logout.html'
 
     def get(self, request):
@@ -113,8 +129,9 @@ class LogoutView(APIView):
 
     def post(self, request):
         logout(request)
-        return redirect('login-list')
-        #return Response({'message': "Successfully Logged Out"})
+        if request.accepted_renderer.format == 'html':
+            return redirect('login-list')
+        return Response({'message': "Successfully Logged Out"}, status=status.HTTP_200_OK)
     
 class UpdateProfileView(APIView):
     '''
