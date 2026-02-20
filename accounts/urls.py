@@ -13,6 +13,8 @@ urlpatterns = [
     path('register/', RegisterViewSet.as_view(), name ='register'),
     path('profile/', UpdateProfileView.as_view(), name ='profile'),
     path('logout/', LogoutView.as_view(), name ='logout'),
+
+    path('user-choices',views.user_choices, name='user-choices'),
     
     path('', include(router.urls)),
      
