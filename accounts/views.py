@@ -72,7 +72,7 @@ class LoginViewSet(viewsets.ViewSet):
     serializer_class = LoginSerializer
 
      #http render in django
-    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'login.html'
 
     def list(self, request):
@@ -88,7 +88,7 @@ class LoginViewSet(viewsets.ViewSet):
             #authenticate against django auth system
             user = authenticate(request, email=email, password=password)
             if not user:
-                if request.accepted_render.format == 'html':
+                if request.accepted_renderer.format == 'html':
                     return Response({'serializer': serializer, 'error': "Invalid email or password"})
                 return Response({'error': "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -113,7 +113,7 @@ class LoginViewSet(viewsets.ViewSet):
                 'email': user.email,
             }, status=status.HTTP_200_OK)
         
-        if request.accepted_render.format == 'html':
+        if request.accepted_renderer.format == 'html':
             return Response({'serializer': serializer, 'error': "Invalid email or password"})
         return Response({'error': "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -121,7 +121,7 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     #http render in django
-    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'logout.html'
 
     def get(self, request):
@@ -142,7 +142,7 @@ class UpdateProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     #http render in django
-    renderer_classes = [TemplateHTMLRenderer]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'profile.html'
 
     def get(self, request):
@@ -155,7 +155,7 @@ class UpdateProfileView(APIView):
         #edit mode for template rendering a single users profile
         edit_mode = request.GET.get('edit') == '1'
 
-        return Response({'data':serializer, 'serializer': serializer, 'edit_mode': edit_mode})
+        return Response({'data':serializer.data, 'serializer': serializer.data, 'edit_mode': edit_mode})
     
     def post(self, request):
         '''
@@ -167,6 +167,6 @@ class UpdateProfileView(APIView):
         if serializer.is_valid():
 
             serializer.save()
-            return Response({'message': 'Profile updated', 'serializer': serializer})
+            return Response({'message': 'Profile updated', 'serializer': serializer.data})
         
         return Response(serializer.errors)
