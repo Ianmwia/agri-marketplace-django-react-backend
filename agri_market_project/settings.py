@@ -130,7 +130,7 @@ CORS_ALLOWED_ORIGINS = [
 #trust the origin for csrf protection
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
-    "http://localhost:5173"
+    "http://localhost:8000"
 ]
 
 
@@ -176,8 +176,9 @@ SWAGGER_SETTINGS = {
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
 
+CSRF_COOKIE_HTTPONLY = False
 
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
-SESSION_COOKIE_HISTORY = True
+SESSION_SAVE_EVERY_REQUEST = True
