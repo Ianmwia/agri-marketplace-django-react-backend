@@ -8,10 +8,11 @@ class OrderSerializer(serializers.ModelSerializer):
     '''
     image = serializers.ImageField(source='produce.image', read_only=True)
     produce_name = serializers.ReadOnlyField(source='produce.name')
+    total_amount = serializers.ReadOnlyField()
     class Meta:
         model = Order
         fields = '__all__'
-        read_only_fields = ['buyer', 'status', 'created_at', 'rejection_reason']
+        read_only_fields = ['buyer', 'status', 'created_at', 'rejection_reason', 'total_amount']
 
     def create(self, validated_data):
         '''
