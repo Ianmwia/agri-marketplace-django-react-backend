@@ -4,8 +4,9 @@ from rest_framework.decorators import action
 from .models import Order
 from .serializers import OrderSerializer
 from rest_framework import viewsets, permissions
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from produce.models import Produce
+from produce.serializers import ProduceSerializer
 
 
 # Create your views here.
@@ -19,7 +20,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     #http render in django
-    renderer_classes = [TemplateHTMLRenderer]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'order.html'
 
     def list(self, request, *args, **kwargs):
@@ -32,7 +33,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         #get available produce so a buyer can select an item
         available_produce = Produce.objects.filter(quantity__gt=0)
 
-        return Response({'serializer': serializer, 'orders':orders, 'available_produce': available_produce})
+        return Response({'serializer': serializer.data, 
+                         'orders':OrderSerializer(orders, many=True).data, 
+                         'available_produce': ProduceSerializer(available_produce, many=True).data})
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -44,10 +47,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         orders = self.get_queryset()
         available_produce = Produce.objects.all()
         return Response({
-            'serializer': serializer,
-            'orders':orders,
-            'available_produce': available_produce
-        })
+            'serializer': serializer.data,
+            'orders':OrderSerializer(orders, many=True).data, 
+             'available_produce': ProduceSerializer(available_produce, many=True).data})
     
     def get_queryset(self):
         #swagger line for mock anon user to 
@@ -79,7 +81,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         
         order.status = 'accepted'
         order.save()
-        #return Response({"message": "Order Accepted"})
+        return Response({"message": "Order Accepted", 'status': order.status})
         return redirect('produce-list')
     
 
