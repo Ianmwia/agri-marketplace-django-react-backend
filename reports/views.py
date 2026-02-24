@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
@@ -19,13 +19,16 @@ class ReportViewSet(viewsets.ModelViewSet):
 
 
     #http render in django
-    renderer_classes = [TemplateHTMLRenderer]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'reports.html'
+
+    def perform_create(self, serializer):
+        serializer.save(reported_by=self.request.user)
 
     def get_queryset(self):
         user = self.request.user
 
-        if hasattr(user, 'role') and user.role == 'agrovet':
+        if hasattr(user, 'role') and user.role == 'field_officer':
             return Report.objects.filter(assigned_to=self.request.user).order_by('-created_at')
         
         return Report.objects.filter(reported_by=self.request.user).order_by('-created_at')
