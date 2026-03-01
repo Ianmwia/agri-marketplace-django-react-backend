@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .serializers import RegisterSerializer, LoginSerializer, ProfileUpdateSerializer
+from .serializers import RegisterSerializer, LoginSerializer, ProfileUpdateSerializer, UserSerializer
 from .models import CustomUser
 from rest_framework.response import Response
 from rest_framework import viewsets, serializers, status
@@ -11,6 +11,21 @@ from drf_yasg.utils import swagger_auto_schema
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
+
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+
+#/me/ fronted must not read roles from localstorage
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(UserSerializer(request.user).data)
+
+# django react csrf cookie
+@ensure_csrf_cookie
+def get_csrf(request):
+    return JsonResponse({'message': 'CSRF Cookie Token Set'})
 
 # Create your views here.
 #landing page
@@ -25,6 +40,17 @@ def user_choices(request):
         'fields' : [field[0] for field in CustomUser.FIELDS]
     })
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_users(request):
+    """
+    Returns all users except the currently logged-in user.
+    Used for chat user selection in frontend.
+    """
+    users = CustomUser.objects.exclude(id=request.user.id)
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
 
 #class based Api Views
 class RegisterViewSet(APIView):

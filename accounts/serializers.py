@@ -61,3 +61,13 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['first_name','last_name','email','image', 'location', 'phone', 'role']
         read_only_fields = ['email', 'role']
+
+class UserSerializer(serializers.ModelSerializer):
+    ''' return authenticated user data for role based control'''
+    image = serializers.ImageField(read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = [
+            'id', 'first_name', 'last_name', 'email', 'role', 'location', 'image'
+        ]
