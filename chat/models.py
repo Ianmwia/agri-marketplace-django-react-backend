@@ -1,12 +1,15 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from orders.models import Order
 
 # Create your models here.
 class Thread(models.Model):
     ''' Container for thread, so keep 2 users in conversation'''
     user1 = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='threads_user1')
     user2 = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='threads_user2')
+
+    order = models.ForeignKey('orders.Order', on_delete=models.SET_NULL, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

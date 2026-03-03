@@ -5,11 +5,17 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from django.db.models import Q
 from django.contrib.auth import get_user_model
+from orders.models import Order
 
 User = get_user_model()
 
 # Create your views here.
 class ThreadViewSet(viewsets.ModelViewSet):
+    '''viewset for managing conversations
+    -Buyer & farmer
+    -Farmer * field officer 
+    '''
+
     queryset = Thread.objects.all()
     serializer_class = ThreadSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -19,11 +25,12 @@ class ThreadViewSet(viewsets.ModelViewSet):
 
         return Thread.objects.filter(
             Q(user1=user) | Q(user2=user)
-        ).select_related('user1', 'user2')
+        ).select_related('user1', 'user2', 'order__batch__produce').order_by('-updated_at')
     
     def create(self, request, *args, **kwargs):
         user1 = request.user
         user2_id = request.data.get('user2')
+        order_id = request.data.get('order')
 
         if not user2_id:
             return Response({'Error': "User2 ID is required"})#400
@@ -36,9 +43,25 @@ class ThreadViewSet(viewsets.ModelViewSet):
         if user1 == user2:
             return Response({"Error": "You cannot chat with yourself"})
         
+        #prevent buyer and field officer
+        roles = {user1.role, user2.role}
+        if 'buyer' in roles and 'field_officer' in roles:
+            return Response({
+                'error':'Communication between Buyer and Field Officer not permitted'
+            })
+        
+        #maintain unique IDs
         u1, u2 = (user1, user2) if user1.id < user2.id else (user2, user1)
 
         thread, created = Thread.objects.get_or_create(user1=u1, user2=u2)
+
+        if order_id:
+            try:
+                order_obj = Order.objects.get(id=order_id)
+                thread.order = order_obj
+                thread.save()
+            except Order.DoesNotExist:
+                pass
 
         serializer = self.get_serializer(thread)
         return Response(serializer.data)#201
