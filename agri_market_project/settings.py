@@ -148,11 +148,12 @@ DATABASES = {
 #This logic checks if 'INTERNAL_DATABASE_URL' exists (Render). 
 #If not, it falls back to local SQLite so you don't get errors on your laptop.
 
+DATABASE_URL = os.environ.get("INTERNAL_DATABASE_URL") or os.environ.get("EXTERNAL_DATABASE_URL")
 
-if os.environ.get('INTERNAL_DATABASE_URL'):
+if DATABASE_URL:
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('INTERNAL_DATABASE_URL'),
+        'default': dj_database_url.parse(
+            DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True
         )
@@ -164,6 +165,23 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+print("DATABASES = ", DATABASES)
+# if os.environ.get('INTERNAL_DATABASE_URL'):
+#     DATABASES = {
+#         'default': dj_database_url.config(
+#             default=os.environ.get('INTERNAL_DATABASE_URL'),
+#             conn_max_age=600,
+#             conn_health_checks=True
+#         )
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
 
 
 
