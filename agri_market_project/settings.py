@@ -282,4 +282,4 @@ CSRF_COOKIE_SECURE = True
 
 SESSION_SAVE_EVERY_REQUEST = True
 
-import agri_market_project.cloudinary_config
+#import agri_market_project.cloudinary_config
