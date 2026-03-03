@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 from decouple import config
 import cloudinary
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +34,7 @@ cloudinary.config(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -66,6 +68,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -100,7 +103,7 @@ CHANNEL_LAYERS = {
     "default":{
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [(config("REDIS_URL"))],
         },
     },
 }
@@ -122,6 +125,46 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#          'ENGINE': 'django.db.backends.postgresql',
+#          'NAME': config('DATABASE_NAME'), #add name of db created
+#          'USER': config('DATABASE_USER'), #username autocreated
+#          'PASSWORD': config('DATABASE_PASSWORD'),
+#          'HOST': config('DATABASE_HOST'),
+#          'PORT': config('PORT')
+#     }
+# }
+
+#for online we use render online postgres
+DATABASES = {
+    'default': dj_database_url.config(
+        default=config('INTERNAL_DATABASE_URL'), # fallback for local development
+        conn_max_age=600,
+        conn_health_checks=True
+    )
+}
+#This logic checks if 'INTERNAL_DATABASE_URL' exists (Render). 
+#If not, it falls back to local SQLite so you don't get errors on your laptop.
+
+
+if os.environ.get('INTERNAL_DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('INTERNAL_DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 
 # Password validation
@@ -179,9 +222,12 @@ APPEND_SLASH = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]
+
+#static
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 #CUSTOM USER MODEL
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -202,7 +248,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 
 CSRF_COOKIE_HTTPONLY = False
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 SESSION_SAVE_EVERY_REQUEST = True
