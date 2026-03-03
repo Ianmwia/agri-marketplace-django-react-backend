@@ -21,9 +21,22 @@ class Produce(models.Model):
     category = models.ForeignKey(Category, verbose_name=_("produce category"), on_delete=models.SET_NULL, null=True)
     image = CloudinaryField("product image", blank=True)
     description = models.TextField(_("produce description"))
-    quantity = models.PositiveIntegerField(_("amount of produce"))
-    price = models.DecimalField(_("price of produce"), max_digits=10, decimal_places=2, validators=[MinValueValidator(300, "minimum price is 300")])
-    date_created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.name} by {self.farmer.email}'
+    
+class ProduceBatch(models.Model):
+    produce = models.ForeignKey(Produce, related_name='batches', on_delete=models.CASCADE)
+    batch_number = models.CharField(unique=True, max_length=20)
+    quantity = models.PositiveIntegerField(
+        validators=[MinValueValidator(10)],
+        help_text=('Enter quantity above 10kgs')
+    )
+    price_per_unit = models.DecimalField(max_digits=10, decimal_places=2,
+            validators=[MinValueValidator(400)],
+            help_text=('Minimum price per quantity is Kes 400'))
+    harvest_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.name} by {self.farmer.first_name} {self.farmer.email}'
+        return f'{self.produce.name} - {self.batch_number} ({self.quantity} left)'
