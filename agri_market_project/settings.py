@@ -138,13 +138,13 @@ DATABASES = {
 # }
 
 #for online we use render online postgres
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('INTERNAL_DATABASE_URL'), # fallback for local development
-        conn_max_age=600,
-        conn_health_checks=True
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('INTERNAL_DATABASE_URL'), # fallback for local development
+#         conn_max_age=600,
+#         conn_health_checks=True
+#     )
+# }
 #This logic checks if 'INTERNAL_DATABASE_URL' exists (Render). 
 #If not, it falls back to local SQLite so you don't get errors on your laptop.
 
