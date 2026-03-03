@@ -35,9 +35,8 @@ cloudinary.config(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -109,7 +108,7 @@ CHANNEL_LAYERS = {
     "default":{
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(url.hostname, int(url.port), url.password)],
+            "hosts": [(url.hostname, (url.port), url.password)],
         },
     },
 }
@@ -195,6 +194,12 @@ AUTH_PASSWORD_VALIDATORS = [
 #react integration 180226 18.15
 CORS_ALLOW_CREDENTIALS = True
 
+ALLOWED_HOSTS = [
+    "agri-marketplace-django-react-backend.onrender.com"
+]
+
+
+#add frontend here react
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173"
@@ -202,6 +207,7 @@ CORS_ALLOWED_ORIGINS = [
 
 #trust the origin for csrf protection
 CSRF_TRUSTED_ORIGINS = [
+    "https://agri-marketplace-django-react-backend.onrender.com",
     "http://localhost:5173",
     "http://localhost:8000"
 ]
