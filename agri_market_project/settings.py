@@ -15,6 +15,7 @@ from decouple import config
 import cloudinary
 import os
 import dj_database_url
+import urllib.parse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -98,12 +99,17 @@ WSGI_APPLICATION = 'agri_market_project.wsgi.application'
 #asgi daphne
 ASGI_APPLICATION = 'agri_market_project.asgi.application'
 
+#upstash redis
+redis_url = os.environ.get("REDIS_URL")
+
+url = urllib.parse.urlparse(redis_url)
+
 #redis channels layers
 CHANNEL_LAYERS = {
     "default":{
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(config("REDIS_URL"))],
+            "hosts": [(url.hostname, int(url.port), url.password)],
         },
     },
 }
