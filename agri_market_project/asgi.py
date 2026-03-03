@@ -8,8 +8,12 @@ https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/
 """
 
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'agri_market_project.settings')
+import django
 from django.core.asgi import get_asgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'agri_market_project.settings')
+
+django_asgi_app = get_asgi_application()
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
@@ -23,7 +27,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 import chat.routing
 
 application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
+    'http': django_asgi_app,
 
     "websocket": AuthMiddlewareStack(
         URLRouter(

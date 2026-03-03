@@ -103,7 +103,7 @@ CHANNEL_LAYERS = {
     "default":{
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(url.hostname, (url.port), url.password)],
+            "hosts": [(url.hostname, url.port or 6379, url.password)],
         },
     },
 }
@@ -283,3 +283,13 @@ CSRF_COOKIE_SECURE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
 #import agri_market_project.cloudinary_config
+
+import cloudinary
+
+# move to bottom to avoid circular imports in the produce app - which has settings import and cloudinary
+cloudinary.config(
+    api_key = config('CLOUDINARY_API_KEY'),
+    api_secret = config('CLOUDINARY_API_SECRET'),
+    cloud_name = config('CLOUDINARY_CLOUD_NAME'),
+    secure = True
+)

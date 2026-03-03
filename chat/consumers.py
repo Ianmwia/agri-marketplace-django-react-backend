@@ -1,13 +1,14 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
-from .models import Thread, Message
+#from .models import Thread, Message
 from channels.db import database_sync_to_async
 
 User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        from .models import Thread
         self.thread_id = self.scope['url_route']['kwargs']['thread_id']
         self.room_group_name = f'chat_{self.thread_id}'
         
@@ -28,6 +29,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     #recieve message from wesocket
     async def receive(self, text_data = None, bytes_data = None):
+        from .models import Thread, Message
         data = json.loads(text_data)
         message_text = data.get('message')
         user = self.scope['user']
