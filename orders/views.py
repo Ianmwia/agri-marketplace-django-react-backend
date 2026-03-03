@@ -10,6 +10,10 @@ from produce.serializers import ProduceSerializer
 from rest_framework.permissions import BasePermission
 from django.db.models import F
 
+#mpesa
+from mpesa.views import initialize_stk_push
+from mpesa.models import MpesaRequest, MpesaResponse
+
 
 class IsBuyer(BasePermission):
     def has_permission(self, request, view):
@@ -112,6 +116,43 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.save()
         return Response({"message": "Order Accepted", 'status': order.status})
         return redirect('produce-list')
+    
+    #mpesa pay after accept
+    @action(detail=True, methods=['post'])
+    def pay(self, request, pk=None):
+        order = self.get_object()
+
+        if order.status != 'accepted':
+            return Response({'error': 'Order must be accepted first'})
+        
+        #mpesa request object
+        mpesa_req = MpesaRequest.objects.create(
+            order=order,
+            phone_number = request.user.phone,
+            amount = order.total_price,
+            account_reference=f'ORDER {order.id}',
+            transaction_description = f'Payment for {order.batch.produce.name}',
+        )
+        #call init logic
+        response_data = initialize_stk_push(mpesa_req)
+
+        #handle response
+        if response_data.get('ResponseCode') == '0':
+            MpesaResponse.objects.create(
+                request = mpesa_req,
+                merchant_request_id = response_data.get('MerchantRequestID'),
+                checkout_request_id = response_data.get('CheckoutRequestID'),
+                response_code = response_data.get('ResponseCode'),
+                customer_message = response_data.get('CustomerMessage'),
+            )
+
+        #update order
+            order.mpesa_checkout_id = response_data.get('CheckoutRequestID')
+            order.save()
+            return Response(response_data)
+        
+        return Response({'Error': "Safaricom rejected the request"})
+
     
 
     @action(detail=True, methods=['post'])
