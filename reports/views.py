@@ -10,12 +10,18 @@ from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
+from rest_framework.permissions import BasePermission
+
+
+class IsFieldOfficer(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'field_officer' or request.user.role == 'farmer'
 
 # Create your views here.
 class ReportViewSet(viewsets.ModelViewSet):
     #queryset = Report.objects.all()
     serializer_class = ReportSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsFieldOfficer]
 
 
     #http render in django
@@ -31,10 +37,14 @@ class ReportViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'role') and user.role == 'field_officer':
             return Report.objects.filter(assigned_to=self.request.user).order_by('-created_at')
         
+        
         return Report.objects.filter(reported_by=self.request.user).order_by('-created_at')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        #serializer = self.get_serializer(queryset, many=True)
+        serializer = self.get_serializer(queryset, many=True)
+
+        if request.accepted_renderer.format == 'json':
+            return Response({'reports': serializer.data})
         return Response({'reports': queryset})
     
