@@ -9,11 +9,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from drf_yasg.utils import swagger_auto_schema
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import redirect
 
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
+from .helpers import normalize_phone_number
+
+User = get_user_model()
 
 #/me/ fronted must not read roles from localstorage
 class MeView(APIView):
@@ -26,6 +29,31 @@ class MeView(APIView):
 @ensure_csrf_cookie
 def get_csrf(request):
     return JsonResponse({'message': 'CSRF Cookie Token Set'})
+
+#only show eligible users in chat
+# @permission_classes([IsAuthenticated])
+# def get_eligible_contacts(request):
+#     user = request.user
+#     eligible_ids = set()
+
+#     if user.role == 'buyer':
+#         from orders.models import Order
+#         farmers = Order.objects.filter(buyer=user).values_list('batch__produce__farmer_id', flat=True)
+#         eligible_ids.update(farmers)
+
+#     elif user.role == 'farmer':
+#         from reports.models import Report
+#         officers = Report.objects.filter(reported_by=user).values_list('assigned_to_id', flat=True)
+#         eligible_ids.update(officers)
+
+#         from orders.models import Order
+#         buyers = Report.objects.filter(batch__produce__farmer=user).values_list('buyer_id', flat=True)
+#         eligible_ids.update(buyers)
+    
+#     users = User.objects.filter(id__in=eligible_ids).exclude(id=user.id)
+#     serializer = UserSerializer(users, many=True)
+#     return Response(serializer.data)
+
 
 # Create your views here.
 #landing page
@@ -191,8 +219,10 @@ class UpdateProfileView(APIView):
         '''
         serializer = ProfileUpdateSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
+            if 'phone' in serializer.validated_data:
+                serializer.validated_data['phone'] = normalize_phone_number(serializer.validated_data['phone'])
 
-            serializer.save()
+            user = serializer.save()
             return Response({'message': 'Profile updated', 'serializer': serializer.data})
         
         return Response(serializer.errors)
