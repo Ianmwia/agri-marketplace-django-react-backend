@@ -8,6 +8,8 @@ https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/
 """
 
 import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'agri_market_project.settings')
+
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
@@ -16,7 +18,7 @@ from django.core.asgi import get_asgi_application
 #redis channels
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'agri_market_project.settings')
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'agri_market_project.settings')
 
 import chat.routing
 
