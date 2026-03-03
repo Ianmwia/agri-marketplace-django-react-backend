@@ -195,18 +195,22 @@ AUTH_PASSWORD_VALIDATORS = [
 CORS_ALLOW_CREDENTIALS = True
 
 ALLOWED_HOSTS = [
-    "agri-marketplace-django-react-backend.onrender.com"
+    "agri-marketplace-django-react-backend.onrender.com",
+    "127.0.0.1",
+    "localhost"
 ]
 
 
 #add frontend here react
 CORS_ALLOWED_ORIGINS = [
+    "https://agri-marketplace-app-react.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173"
 ]
 
 #trust the origin for csrf protection
 CSRF_TRUSTED_ORIGINS = [
+    "https://agri-marketplace-app-react.vercel.app",
     "https://agri-marketplace-django-react-backend.onrender.com",
     "http://localhost:5173",
     "http://localhost:8000"
