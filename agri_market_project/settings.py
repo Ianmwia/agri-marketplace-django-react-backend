@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
-import cloudinary
+from cloudinary import Config
 import os
 import dj_database_url
 import urllib.parse
@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
-cloudinary.config(
+cloudinary_config = Config(
     api_key = config('CLOUDINARY_API_KEY'),
     api_secret = config('CLOUDINARY_API_SECRET'),
     cloud_name = config('CLOUDINARY_CLOUD_NAME'),
