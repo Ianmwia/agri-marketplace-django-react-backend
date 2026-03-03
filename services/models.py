@@ -10,7 +10,7 @@ class Service(models.Model):
     -field office is assigned and offers the service with charge
 
     '''
-    SERVICE_CHOICES = {
+    SERVICE_CHOICES = (
         #Animal
         ('veterinarian', 'Veterinarian'),
         ('livestock_showman', 'Livestock Showman'),
@@ -18,10 +18,10 @@ class Service(models.Model):
         ('soil_technician', 'Soil Technician'),
         #Machinery
         ('tractor_service', 'Tractors'),
-    }
+    )
 
     provider = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='offered_services')
-    title = models.CharField(choices=SERVICE_CHOICES) # title of the field officer , the sub role
+    title = models.CharField(choices=SERVICE_CHOICES, max_length=50) # title of the field officer , the sub role
     category = models.CharField(max_length=50, choices=CustomUser.FIELDS)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
