@@ -5,11 +5,13 @@ from .serializers import ProduceSerializer
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from orders.models import Order
+from produce.models import Produce
 from reports.serializers import ReportSerializer
 from orders.serializers import OrderSerializer
 from rest_framework.decorators import action
 from accounts.models import CustomUser
 from reports.models import Report
+from produce.serializers import BatchSerializer
 
 # Create your views here.
 
@@ -17,20 +19,39 @@ class IsAFarmer(permissions.BasePermission):
     '''check if the authenticated user role is farmer'''
     
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'farmer'
+        return request.user.role == 'farmer'
     
 class ProduceViewSet(viewsets.ModelViewSet):
     serializer_class = ProduceSerializer
-    permission_classes = [IsAFarmer]
+    permission_classes = [permissions.IsAuthenticated,IsAFarmer]
 
     #http render in django
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'produce.html'
 
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Produce.objects.none()
+
+        return Produce.objects.filter(
+            farmer=self.request.user)\
+        .prefetch_related('batches')\
+    .select_related('category', 'farmer')\
+    .order_by('-id')
+    
+    @action(detail=True, methods=['post'])
+    def add_batch(self, request, pk=None):
+        produce = self.get_object()
+        serializer = BatchSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(produce=produce)
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    
     def list(self, request, *args, **kwargs):
         # get the farmers produce
         serializer = self.get_serializer()
-        orders = Order.objects.filter(produce__farmer=request.user)
+        orders = Order.objects.filter(batch__produce__farmer=request.user)
         produce_list = self.get_queryset()
 
         officers_queryset = CustomUser.objects.filter(role='field_officer',) # react get file officer
@@ -61,7 +82,7 @@ class ProduceViewSet(viewsets.ModelViewSet):
         if request.accepted_renderer.format == 'json':
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        orders = Order.objects.filter(produce__farmer=request.user)
+        orders = Order.objects.filter(batch__produce__farmer=request.user)
         report_serializer = ReportSerializer()
 
         return Response({'serializer': serializer, 'orders': orders, 'report_serializer': report_serializer})
@@ -73,13 +94,13 @@ class ProduceViewSet(viewsets.ModelViewSet):
             serializer.save(reported_by=request.user)
         return redirect('produce-list')
 
-    def get_queryset(self):
-        '''list all each farmers produce'''
-        #swagger line for mock anon user to 
-        if getattr(self, 'swagger_fake_view', False):
-            return Produce.objects.none()
+    # def get_queryset(self):
+    #     '''list all each farmers produce'''
+    #     #swagger line for mock anon user to 
+    #     if getattr(self, 'swagger_fake_view', False):
+    #         return Produce.objects.none()
         
-        return Produce.objects.filter(farmer=self.request.user).order_by('-date_created')
+    #     return Produce.objects.filter(farmer=self.request.user).order_by('-date_created')
     
     def perform_create(self, serializer):
         serializer.save(farmer=self.request.user)
