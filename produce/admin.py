@@ -3,16 +3,16 @@ from django.contrib.auth.admin import UserAdmin
 from .models import Category, Produce
 
 # Register your models here.
-class CategoryAdmin(admin.ModelAdmin):
+# class CategoryAdmin(admin.ModelAdmin):
     
-    list_display = ('id', 'name')
-    search_fields = ('name',)
+#     list_display = ('id', 'name')
+#     search_fields = ('name',)
    
-admin.site.register(Category, CategoryAdmin)
+admin.site.register(Category)
 
-class ProduceAdmin(admin.ModelAdmin):
+# class ProduceAdmin(admin.ModelAdmin):
     
-    list_display = ('id', 'name', 'farmer', 'category', 'quantity', 'price' , 'date_created')
-    search_fields = ('name', 'farmer__name',)
+#     list_display = ('id', 'name', 'farmer', 'category', 'quantity', 'price' , 'date_created')
+#     search_fields = ('name', 'farmer__name',)
     
-admin.site.register(Produce, ProduceAdmin)
+admin.site.register(Produce)
