@@ -8,6 +8,7 @@ from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from drf_yasg.utils import swagger_auto_schema
+from django.middleware.csrf import get_token
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import redirect
@@ -28,7 +29,7 @@ class MeView(APIView):
 # django react csrf cookie
 @ensure_csrf_cookie
 def get_csrf(request):
-    return JsonResponse({'message': 'CSRF Cookie Token Set'})
+    return JsonResponse({'csrfToken': get_token(request)})
 
 #only show eligible users in chat
 # @permission_classes([IsAuthenticated])
