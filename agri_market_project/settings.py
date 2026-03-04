@@ -30,7 +30,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 
@@ -96,14 +96,26 @@ ASGI_APPLICATION = 'agri_market_project.asgi.application'
 #upstash redis
 redis_url = os.environ.get("REDIS_URL")
 
-url = urllib.parse.urlparse(redis_url)
+# url = urllib.parse.urlparse(redis_url)
 
-#redis channels layers
+# #redis channels layers
+# CHANNEL_LAYERS = {
+#     "default":{
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [(url.hostname, url.port or 6379, url.password)],
+#         },
+#     },
+# }
+
 CHANNEL_LAYERS = {
     "default":{
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(url.hostname, url.port or 6379, url.password)],
+            "hosts": [{
+                "address":os.environ.get("REDIS_URL"),
+                "ssl_cert_reqs": None,
+            }]
         },
     },
 }
