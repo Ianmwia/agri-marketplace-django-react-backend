@@ -204,15 +204,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-CORS_ALLOW_HEADERS = {
+CORS_ALLOW_HEADERS = [
     "accept",
     "authorization",
     "content-type",
     "user-agent",
     "x-csrftoken",
-    "x-requested-with"
+    "x-requested-with",
 
-}
+]
 #react integration 180226 18.15
 CORS_ALLOW_CREDENTIALS = True
 
