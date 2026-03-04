@@ -73,6 +73,14 @@ class ProduceViewSet(viewsets.ModelViewSet):
             })
         return Response({'serializer': serializer.data, 'orders': orders, 'produce_list': produce_list, 'report_serializer':report_serializer, 'reports': reports})
     
+
+    def destroy(self, request, *args, **kwargs):
+        produce = self.get_object()
+        if produce.farmer != request.user:
+            return Response({'detail': "Not Allowed to delete this produce"})
+        self.perform_destroy(produce)
+        return Response({'detail': "Produce Deleted Successfully"})
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
