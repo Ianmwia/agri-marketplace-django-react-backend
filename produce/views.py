@@ -26,7 +26,7 @@ class ProduceViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated,IsAFarmer]
 
     #http render in django
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    renderer_classes = [JSONRenderer]
     template_name = 'produce.html'
 
     def get_queryset(self):
@@ -85,10 +85,10 @@ class ProduceViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
-            return self.list(request, *args, **kwargs)
+            return Response(serializer.data)
         
-        if request.accepted_renderer.format == 'json':
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if request.accepted_renderer.format == 'json':
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         orders = Order.objects.filter(batch__produce__farmer=request.user)
         report_serializer = ReportSerializer()
