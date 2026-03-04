@@ -35,7 +35,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLES = (
         ('farmer', 'Farmer'),
         ('buyer','Buyer'),
-        ('admin','Admin'),
         ('field_officer','Field Officer'),
     )
     FIELDS = (
