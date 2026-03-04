@@ -31,8 +31,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsBuyer]
 
     #http render in django
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    template_name = 'order.html'
+    renderer_classes = [JSONRenderer]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -75,14 +74,20 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             serializer.save()
-            return redirect('order-list')
         
+            orders = self.get_queryset()
+            available_produce = ProduceBatch.objects.filter(quantity__gt=0)
+            return Response({
+                'serializer': serializer.data,
+                'orders':OrderSerializer(orders, many=True).data, 
+                'available_produce': ProduceBatchSerializer(available_produce, many=True).data})
         orders = self.get_queryset()
         available_produce = ProduceBatch.objects.filter(quantity__gt=0)
         return Response({
-            'serializer': serializer.data,
-            'orders':OrderSerializer(orders, many=True).data, 
-             'available_produce': ProduceBatchSerializer(available_produce, many=True).data})
+            "serializer": serializer.errors,
+            'orders': OrderSerializer(orders, many=True).data,
+            "available_produce":ProduceBatchSerializer(available_produce, many=True).data
+        })
     
     # def get_queryset(self):
     #     #swagger line for mock anon user to 
