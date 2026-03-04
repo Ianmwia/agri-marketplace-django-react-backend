@@ -74,9 +74,15 @@ class MessageViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        return Message.objects.filter(
+        queryset = Message.objects.filter(
             Q(thread__user1=user) | Q(thread__user2=user)
-        )
+        ).order_by('created_at')
+
+        thread_id = self.request.query_params.get('thread')
+        if thread_id:
+            queryset = queryset.filter(thread_id=thread_id)
+            return queryset
+
     
     def perform_create(self, serializer):
         serializer.save(sender=self.request.user)
