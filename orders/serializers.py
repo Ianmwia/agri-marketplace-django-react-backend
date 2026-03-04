@@ -36,7 +36,7 @@ class OrderSerializer(serializers.ModelSerializer):
         batch = validated_data['batch']
         order_quantity = validated_data['quantity']
 
-        validated_data['total_amount'] = batch.price_per_unit * order_quantity
+        validated_data['total_price'] = batch.price_per_unit * order_quantity
 
         #check stock in the db
         if order_quantity > batch.quantity:

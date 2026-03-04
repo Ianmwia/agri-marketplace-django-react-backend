@@ -81,12 +81,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 'serializer': serializer.data,
                 'orders':OrderSerializer(orders, many=True).data, 
                 'available_produce': ProduceBatchSerializer(available_produce, many=True).data})
-        orders = self.get_queryset()
-        available_produce = ProduceBatch.objects.filter(quantity__gt=0)
+        #orders = self.get_queryset()
+        #available_produce = ProduceBatch.objects.filter(quantity__gt=0)
         return Response({
-            "serializer": serializer.errors,
-            'orders': OrderSerializer(orders, many=True).data,
-            "available_produce":ProduceBatchSerializer(available_produce, many=True).data
+            "error": serializer.errors
         })
     
     # def get_queryset(self):
@@ -120,7 +118,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.status = 'accepted'
         order.save()
         return Response({"message": "Order Accepted", 'status': order.status})
-        return redirect('produce-list')
     
     #mpesa pay after accept
     @action(detail=True, methods=['post'])
