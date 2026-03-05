@@ -1,6 +1,6 @@
 # Agriculture Marketplace
 
-This project is a comprehensive B2C digital ecosystem built with django , designed to bridge a gap between farmers, buyers and agricultural experts. It streamlines the farm to table supply chain while proving a dedicated communication channel for technical farm support.
+This project is a comprehensive B2B and B2Help digital ecosystem built with django , designed to bridge a gap between farmers, buyers and agricultural experts. It streamlines the farm to table supply chain while proving a dedicated communication channel for technical farm support.
 
 ## Tech Stack
 
@@ -54,8 +54,7 @@ git clone https://github.com/Ianmwia/agri-marketplace-django-react-backend.git
 2. Open the folder in a terminal
 
 ```git
-cd photo_project
-
+cd agri_market_project
 ```
 3. Create the virtual environment
 
@@ -75,9 +74,33 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
-## Contributing
+## CONTRIBUTION
 
-- Contributions are welcome
-- Feel Free to Fork the Repository and  Submit a pull request
+Contributions are Welcome
 
-- If there are any issues or comments please raise a new Issue
+To Contribute
+
+1. Fork The repository
+
+2. Create a new feature branch
+
+```git
+git checkout -b feature/your-feature
+```
+
+3. Commit You Changes
+
+```git
+git commit -m 'Add new feature'
+```
+
+4.Push Your branch
+
+```git
+git push origin feature/your-feature
+```
+
+5. Open A pull request
+
+
+[Open an Issue](https://github.com/Ianmwia/agri-marketplace-django-react-backend/issues)
