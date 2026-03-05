@@ -59,10 +59,18 @@ class OrderViewSet(viewsets.ModelViewSet):
         available_batches = ProduceBatch.objects.filter(quantity__gt=0).select_related('produce')
         #serialized_batches = ProduceBatchSerializer(available_batches, many=True)
 
+        #search feature
+        search_query = request.query_params.get('q', '')
+
+        #apply filters
+        if search_query:
+            #search by produce name
+            available_batches = available_batches.filter(produce__name__icontains=search_query)
+
         if request.accepted_renderer.format == 'json':
             return Response({
                 'orders': OrderSerializer(orders, many=True).data,
-                'available_batches':  ProduceBatchSerializer(available_batches, many=True).data
+                'available_batches':  ProduceBatchSerializer(available_batches, many=True).data,
             })
 
         return Response({'serializer': serializer.data, 
