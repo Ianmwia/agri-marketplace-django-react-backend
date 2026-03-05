@@ -104,3 +104,12 @@ git push origin feature/your-feature
 
 
 [Open an Issue](https://github.com/Ianmwia/agri-marketplace-django-react-backend/issues)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Contact
+
+If you have any questions, feel free to reach out via email:
+- [myaccounts@dr.com](mailto:myaccounts@dr.com)
