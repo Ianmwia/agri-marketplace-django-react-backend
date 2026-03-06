@@ -55,7 +55,7 @@ class ProduceViewSet(viewsets.ModelViewSet):
         produce_list = self.get_queryset()
 
         officers_queryset = CustomUser.objects.filter(role='field_officer',) # react get file officer
-        officers_data = list(officers_queryset.values('id', 'first_name', 'last_name'))
+        officers_data = list(officers_queryset.values('id', 'first_name', 'last_name', 'role', 'field'))
 
         reports = Report.objects.filter(reported_by=request.user).order_by('-created_at')
         report_serializer = ReportSerializer()
