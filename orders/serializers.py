@@ -16,6 +16,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     farmer_first_name = serializers.ReadOnlyField(source='batch.produce.farmer.first_name')
     farmer_last_name = serializers.ReadOnlyField(source='batch.produce.farmer.last_name')
+
     class Meta:
         model = Order
         fields = '__all__'
