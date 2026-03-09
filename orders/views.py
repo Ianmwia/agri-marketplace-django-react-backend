@@ -14,6 +14,9 @@ from django.db.models import F
 from mpesa.views import initialize_stk_push
 from mpesa.models import MpesaRequest, MpesaResponse
 
+#textbee sms
+from accounts.helpers import send_free_sms, normalize_phone_number
+
 
 class IsBuyer(BasePermission):
     def has_permission(self, request, view):
@@ -125,7 +128,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         
         order.status = 'accepted'
         order.save()
-        return Response({"message": "Order Accepted", 'status': order.status})
+
+        #send sms message from text bee to buyer that order is accepted
+        msg = f'Order Confirmed: The farmer has accepted your request, please proceed to pay'
+        send_free_sms(order.buyer.phone, msg)
+
+        return Response({"message": "Order Accepted and SMS sent", 'status': order.status})
     
     #mpesa pay after accept
     @action(detail=True, methods=['post'])
@@ -177,24 +185,26 @@ class OrderViewSet(viewsets.ModelViewSet):
                 {'error': 'You are not allowed to accept this order'}
             )
         
-        # get reason form
-        reason = request.data.get("rejection_reason", "No reason provided")
+        # if rejected
+        if order.status == 'rejected':
+            return Response({"message": "Order is already rejected"})
         
-        # reject the order
-        if order.status != 'rejected':
             #give the farmer back the stock
-            batch = order.batch
-            batch.quantity += order.quantity
-            batch.save()
+        batch = order.batch
+        batch.quantity += order.quantity
+        batch.save()
 
-            reason = request.data.get("reason", 'No Reason Provided')
-            order.status = 'rejected'
-            order.rejection_reason = reason
-            order.save()
-            return Response({'message': 'Order already rejected', 'reason': reason})
-        
-        return Response({"message": "Order Rejected", 'reason':reason})
-        #return redirect('produce-list')
+            #get rejection reason and update order 
+        reason = request.data.get("reason") or request.data.get("rejection_reason") or 'No Reason Provided'
+        order.status = 'rejected'
+        order.rejection_reason = reason
+        order.save()
+
+            #send sms message from text bee to buyer that order is rejected
+        msg = f'Order Rejected: The farmer has rejected your request, please check your orders list to see the reason why'
+        send_free_sms(order.buyer.phone, msg)
+
+        return Response({'message': 'Order already rejected', 'reason': reason})
     
 
     @action(detail=True, methods=['post'])
@@ -206,7 +216,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if request.user != order.batch.produce.farmer:
             return Response(
-                {'error': 'You are not allowed to accept this order'}
+                {'error': 'You are not allowed to mark this order as delivered'}
             )
         
         if order.status != 'accepted':
