@@ -17,6 +17,11 @@ from mpesa.models import MpesaRequest, MpesaResponse
 #textbee sms
 from accounts.helpers import send_free_sms, normalize_phone_number
 
+#pagination
+from .pagination import Pagination
+
+#ordering
+from rest_framework.filters import OrderingFilter
 
 class IsBuyer(BasePermission):
     def has_permission(self, request, view):
@@ -32,6 +37,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     '''
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated, IsBuyer]
+    pagination_class = Pagination
 
     #http render in django
     renderer_classes = [JSONRenderer]
@@ -45,7 +51,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Order.objects.filter(buyer=user).select_related('batch__produce')
         
         if user.role == 'farmer':
-            return Order.objects.filter(batch__produce__farmer=user).select_related('batch__produce')
+            return Order.objects.filter(batch__produce__farmer=user).select_related('batch__produce').order_by('-created_at')
         
         
 
@@ -70,12 +76,25 @@ class OrderViewSet(viewsets.ModelViewSet):
             #search by produce name
             available_batches = available_batches.filter(produce__name__icontains=search_query)
 
-        if request.accepted_renderer.format == 'json':
-            return Response({
-                'orders': OrderSerializer(orders, many=True).data,
-                'available_batches':  ProduceBatchSerializer(available_batches, many=True).data,
-            })
+        #pagination
+        page = self.paginate_queryset(orders)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True)
+            
+            if request.accepted_renderer.format == 'json':
+                response = self.get_paginated_response(serializer.data)
 
+                response.data['orders'] = serializer.data
+                response.data['available_batches'] = ProduceBatchSerializer(available_batches, many=True).data
+                return response
+        return Response({
+            'serializer': serializer.data,
+            'orders': serializer.data,
+            'available_produce': ProduceBatchSerializer(available_batches, many=True).data
+        })
+
+                #fallback from pagination
+        serializer = self.get_serializer(orders, many=True)
         return Response({'serializer': serializer.data, 
                          'orders': orders,
                          'available_produce': available_batches})
