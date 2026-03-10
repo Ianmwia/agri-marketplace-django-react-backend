@@ -58,10 +58,11 @@ class ProduceBatchSerializer(serializers.ModelSerializer):
     produce_name = serializers.CharField(source='produce.name')
     farmer_first_name = serializers.CharField(source='produce.farmer.first_name')
     farmer_last_name = serializers.CharField(source='produce.farmer.last_name')
+    farmer_location = serializers.CharField(source='produce.farmer.location')
     produce_image = serializers.ImageField(source='produce.image', read_only=True)
 
 
     class Meta:
         model = ProduceBatch
-        fields = ['id', 'batch_number', 'produce_name', 'quantity', 'price_per_unit', 'produce_image', 'farmer_first_name', 'farmer_last_name']
+        fields = ['id', 'batch_number', 'produce_name', 'quantity', 'price_per_unit', 'produce_image', 'farmer_first_name', 'farmer_last_name', 'farmer_location']
 
