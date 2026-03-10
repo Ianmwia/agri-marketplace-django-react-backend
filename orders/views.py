@@ -8,7 +8,7 @@ from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from produce.models import Produce, ProduceBatch
 from produce.serializers import ProduceSerializer
 from rest_framework.permissions import BasePermission
-from django.db.models import F
+from django.db.models import F, Q
 
 #mpesa
 from mpesa.views import initialize_stk_push
@@ -74,7 +74,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         #apply filters
         if search_query:
             #search by produce name
-            available_batches = available_batches.filter(produce__name__icontains=search_query)
+            available_batches = available_batches.filter(
+                Q(produce__name__icontains=search_query) | Q(produce__farmer__location__icontains=search_query))
 
         #pagination
         page = self.paginate_queryset(orders)
