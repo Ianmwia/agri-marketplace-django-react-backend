@@ -24,6 +24,7 @@ class ProduceSerializer(serializers.ModelSerializer):
     quantity = serializers.IntegerField(write_only=True)
     price_per_unit = serializers.DecimalField(write_only=True, max_digits=10, decimal_places=2)
     batch_number = serializers.CharField(write_only=True)
+    unit = serializers.CharField(write_only=True, required=False, default='kg')
 
     category = serializers.CharField()
 
@@ -36,7 +37,7 @@ class ProduceSerializer(serializers.ModelSerializer):
         style = {'base_template': 'hidden.html'}
     )
 
-    category = serializers.CharField()
+    # category = serializers.CharField()
     class Meta:
         model = Produce
         fields = '__all__'
@@ -49,6 +50,14 @@ class ProduceSerializer(serializers.ModelSerializer):
         quantity = validated_data.pop('quantity')
         price_per_unit = validated_data.pop('price_per_unit')
         batch_number = validated_data.pop('batch_number')
+        unit = validated_data.pop('unit', 'kg')
+
+        #unit minimum enforcement
+        if unit in ['kg', 'litre'] and quantity < 30:
+            raise serializers.ValidationError(f'Quantity must be at least 30 {unit}')
+        if unit in ['unit'] and quantity < 1:
+            raise serializers.ValidationError(f'Quantity must be at least 1')
+
         
         #accept input by name not fk id
         category_name  = self.initial_data.get('category')
@@ -65,6 +74,7 @@ class ProduceSerializer(serializers.ModelSerializer):
         ProduceBatch.objects.create(
             produce=produce,
             quantity = quantity,
+            unit = unit,
             price_per_unit=price_per_unit,
             batch_number = batch_number,
             harvest_date = timezone.now().date()

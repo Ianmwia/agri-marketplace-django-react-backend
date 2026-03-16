@@ -26,12 +26,17 @@ class Produce(models.Model):
         return f'{self.name} by {self.farmer.email}'
     
 class ProduceBatch(models.Model):
+    class Unit(models.TextChoices):
+        KG = 'kg', 'Kilograms'
+        LITRE = 'litre', 'Litres'
+        UNIT = 'unit', 'Units'
     produce = models.ForeignKey(Produce, related_name='batches', on_delete=models.CASCADE)
     batch_number = models.CharField(unique=True, max_length=20)
     quantity = models.PositiveIntegerField(
-        validators=[MinValueValidator(10)],
-        help_text=('Enter quantity above 10kgs')
+        validators=[MinValueValidator(1)],
+        help_text=('Enter quantity above 1 for units or 30 for litres or kilograms')
     )
+    unit = models.CharField(max_length=15, choices=Unit.choices, default=Unit.KG)
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2,
             validators=[MinValueValidator(400)],
             help_text=('Minimum price per quantity is Kes 400'))
