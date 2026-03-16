@@ -1,12 +1,15 @@
 from rest_framework import serializers
 from .models import Order
 from .models import ProduceBatch
+from logistics.serializers import LogisticsSerializer #prevent 400 user duplicate
 
 class OrderSerializer(serializers.ModelSerializer):
     '''
     Serializer for creating and viewing orders
 
     '''
+    delivery = LogisticsSerializer(read_only=True)
+
     image = serializers.ImageField(source='batch.produce.image', read_only=True)
     batch_name = serializers.ReadOnlyField(source='batch.batch_number')
     produce_name = serializers.ReadOnlyField(source='batch.produce.name')
