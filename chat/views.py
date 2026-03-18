@@ -23,9 +23,28 @@ class ThreadViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        return Thread.objects.filter(
-            Q(user1=user) | Q(user2=user)
-        ).select_related('user1', 'user2', 'order__batch__produce').order_by('-updated_at')
+        # return Thread.objects.filter(
+        #     Q(user1=user) | Q(user2=user)
+        # ).select_related('user1', 'user2', 'order__batch__produce').order_by('-updated_at') 
+
+        if user.role == 'buyer':
+            #buyer can only chat to farmers they placed order with
+            farmer_ids = Order.objects.filter(buyer=user)\
+                .values_list('batch__produce__farmer_id', flat=True).distinct()
+            return User.objects.filter(id__in=farmer_ids)
+        
+        elif user.role == 'farmer':
+            #farmer can only chat to buyers who placed an order
+            buyer_ids = Order.objects.filter(buyer=user)\
+                .values_list('buyer_id', flat=True).distinct()
+            return User.objects.filter(id__in=buyer_ids)
+        
+        elif user.role == 'field_officer':
+            #field officer only chat to farmers
+            return User.objects.filter(role='farmer')
+        
+        return User.objects.none()
+        
     
     def create(self, request, *args, **kwargs):
         user1 = request.user
@@ -49,6 +68,18 @@ class ThreadViewSet(viewsets.ModelViewSet):
             return Response({
                 'error':'Communication between Buyer and Field Officer not permitted'
             })
+        
+        #buyer -> farmer only allowed if an order is placed
+        if 'buyer' in roles and 'farmer' in roles:
+            order_exists = Order.objects.filter(
+                buyer=user1 if user1.role == 'buyer' else user2,
+                batch__produce__farmer=user2 if user2.role == 'farmer' else user1
+            ).exists()
+
+            if not order_exists:
+                return Response({
+                    'error':'You can only chat with a farmer after placing an order with said farmer'
+                })
         
         #maintain unique IDs
         u1, u2 = (user1, user2) if user1.id < user2.id else (user2, user1)
