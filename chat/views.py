@@ -23,28 +23,9 @@ class ThreadViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        # return Thread.objects.filter(
-        #     Q(user1=user) | Q(user2=user)
-        # ).select_related('user1', 'user2', 'order__batch__produce').order_by('-updated_at') 
-
-        if user.role == 'buyer':
-            #buyer can only chat to farmers they placed order with
-            farmer_ids = Order.objects.filter(buyer=user)\
-                .values_list('batch__produce__farmer_id', flat=True).distinct()
-            return User.objects.filter(id__in=farmer_ids)
-        
-        elif user.role == 'farmer':
-            #farmer can only chat to buyers who placed an order
-            buyer_ids = Order.objects.filter(buyer=user)\
-                .values_list('buyer_id', flat=True).distinct()
-            return User.objects.filter(id__in=buyer_ids)
-        
-        elif user.role == 'field_officer':
-            #field officer only chat to farmers
-            return User.objects.filter(role='farmer')
-        
-        return User.objects.none()
-        
+        return Thread.objects.filter(
+            Q(user1=user) | Q(user2=user)
+        ).select_related('user1', 'user2', 'order__batch__produce').order_by('-updated_at')        
     
     def create(self, request, *args, **kwargs):
         user1 = request.user
