@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('user-choices',views.user_choices, name='user-choices'),  
     path('users/',views.get_users, name='get-users'),
+    path('chat-users/',views.chat_users, name='chat-users'),
     #path('eligible-users/', views.get_eligible_contacts, name='eligible-users'),
     path('csrf/',views.get_csrf, name='csrf'),   
     path('', include(router.urls)),

@@ -9,6 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from drf_yasg.utils import swagger_auto_schema
 from django.middleware.csrf import get_token
+from orders.models import Order
+from reports.models import Report
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import redirect
@@ -78,6 +80,33 @@ def get_users(request):
     Used for chat user selection in frontend.
     """
     users = CustomUser.objects.exclude(id=request.user.id)
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def chat_users(request):
+    user = request.user
+    eligible_ids = set()
+
+    if user.role == 'buyer':
+        #buyer can only chat to farmers they placed order with
+        farmers = Order.objects.filter(buyer=user)\
+            .values_list('batch__produce__farmer_id', flat=True)
+        eligible_ids.update(farmers)
+        
+    elif user.role == 'farmer':
+        #farmer can only chat to buyers who placed an order
+        buyers = Order.objects.filter(buyer=user)\
+            .values_list('buyer_id', flat=True)
+        eligible_ids.update(buyers)
+    
+    elif user.role == 'field_officer':
+        #field officer only chat to farmers
+        farmers = Report.objects.filter(assigned_to=user).values_list('reported_by_id', flat=True)
+        eligible_ids.update(farmers)
+    
+    users = CustomUser.objects.filter(id__in=eligible_ids).exclude(id=user.id)
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
