@@ -80,3 +80,22 @@ class ProduceSerializer(serializers.ModelSerializer):
             harvest_date = timezone.now().date()
         )
         return produce
+    
+    def update(self, instance, validated_data):
+        ''' allow for updating of farmers produce'''
+        #update produce model
+        for attr in ['name', 'description', 'image']:
+            if attr in validated_data:
+                setattr(instance, attr, validated_data[attr])
+        instance.save()
+
+        #update produce batch
+        batch_update = instance.batches.order_by('-created_at').first()
+        if batch_update:
+            batch_fields = ['price_per_unit', 'quantity']
+            for attr in batch_fields:
+                if attr in validated_data:
+                    setattr(batch_update, attr, validated_data[attr])
+            batch_update.save()
+
+        return instance
