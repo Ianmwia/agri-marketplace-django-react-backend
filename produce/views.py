@@ -94,6 +94,16 @@ class ProduceViewSet(viewsets.ModelViewSet):
         report_serializer = ReportSerializer()
 
         return Response({'serializer': serializer, 'orders': orders, 'report_serializer': report_serializer})
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object() #override update to get both produce and batch instances
+
+        serializer = ProduceSerializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
     
     @action(detail=False, methods=['post'])
     def submit_report(self, request):
