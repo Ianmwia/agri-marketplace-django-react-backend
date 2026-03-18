@@ -21,6 +21,7 @@ from django.urls import re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from dj_rest_auth.views import PasswordResetConfirmView
 
 ...
 #swagger schema
@@ -45,6 +46,9 @@ urlpatterns = [
     path('api/', include('services.urls')),
     path('api/', include('chat.urls')),
     path('api/', include('mpesa.urls')),
+    path('api/', include('logistics.urls')),
+    path('api/auth/', include('dj_rest_auth.urls')),
+    re_path(r'^api/password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,32})/$', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 
     #swagger api patters
     path('swagger.<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),

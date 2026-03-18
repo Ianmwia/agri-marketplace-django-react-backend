@@ -57,12 +57,18 @@ INSTALLED_APPS = [
     'chat',
     'channels',
     'mpesa',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'logistics'
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -108,17 +114,27 @@ redis_url = os.environ.get("REDIS_URL")
 #     },
 # }
 
-CHANNEL_LAYERS = {
+if DEBUG:
+     CHANNEL_LAYERS = {
     "default":{
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [{
-                "address":os.environ.get("REDIS_URL"),
-                "ssl_cert_reqs": None,
-            }]
+            "hosts": [('127.0.0.1', 6379)],
         },
     },
 }
+else:
+    CHANNEL_LAYERS = {
+        "default":{
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [{
+                    "address":os.environ.get("REDIS_URL"),
+                    "ssl_cert_reqs": None,
+                }]
+            },
+        },
+    }
 
 #mpesa
 MPESA_PASSKEY= config('MPESA_PASSKEY')
@@ -178,7 +194,7 @@ else:
         }
     }
 
-print("DATABASES = ", DATABASES)
+#print("DATABASES = ", DATABASES)
 # if os.environ.get('INTERNAL_DATABASE_URL'):
 #     DATABASES = {
 #         'default': dj_database_url.config(
@@ -247,6 +263,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://agri-marketplace-app-react.vercel.app",
     "https://agri-marketplace-django-react-backend.onrender.com",
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
     "http://localhost:8000"
 ]
 
@@ -292,14 +309,27 @@ SWAGGER_SETTINGS = {
 }
 
 
+
+#render deploy
 #Sessions auth lax
-SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SAMESITE = 'None'
+if not DEBUG:
 
-CSRF_COOKIE_HTTPONLY = False
+    SESSION_COOKIE_SAMESITE = 'None'
+    CSRF_COOKIE_SAMESITE = 'None'
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = False
+
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
+
+    CSRF_COOKIE_HTTPONLY = False
+
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = True
+
 
 SESSION_SAVE_EVERY_REQUEST = True
 
@@ -314,3 +344,38 @@ cloudinary.config(
     cloud_name = config('CLOUDINARY_CLOUD_NAME'),
     secure = True
 )
+
+# Add at the bottom
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+
+if DEBUG:
+    FRONTEND_URL = 'http://localhost:5173'
+else:
+    FRONTEND_URL = "https://agri-marketplace-app-react.vercel.app"
+
+#PASSWORD_RESET_CONFIRM_URL = f'{FRONTEND_URL}/password-reset-confirm/{{uid}}/{{token}}'
+
+REST_AUTH = {
+    "PASSWORD_RESET_CONFIRM_URL": f'{FRONTEND_URL}/reset-password/{{uid}}/{{token}}',
+    "PASSWORD_RESET_SERIALIZER": "dj_rest_auth.serializers.PasswordResetSerializer",
+    "PASSWORD_RESET_USE_SITES_DOMAIN": True,
+}
+
+SITE_ID = 2
+
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
