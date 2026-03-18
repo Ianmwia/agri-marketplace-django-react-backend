@@ -97,7 +97,7 @@ def chat_users(request):
         
     elif user.role == 'farmer':
         #farmer can only chat to buyers who placed an order
-        buyers = Order.objects.filter(buyer=user)\
+        buyers = Order.objects.filter(batch__produce__farmer=user)\
             .values_list('buyer_id', flat=True)
         eligible_ids.update(buyers)
     
