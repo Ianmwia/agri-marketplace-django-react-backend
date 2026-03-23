@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from .models import Order
 from .serializers import OrderSerializer, ProduceBatchSerializer
 from rest_framework import viewsets, permissions
-from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer, BrowsableAPIRenderer
 from produce.models import Produce, ProduceBatch
 from produce.serializers import ProduceSerializer
 from rest_framework.permissions import BasePermission
@@ -40,18 +40,26 @@ class OrderViewSet(viewsets.ModelViewSet):
     pagination_class = Pagination
 
     #http render in django
-    renderer_classes = [JSONRenderer]
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
             return Order.objects.none()
         
         user = self.request.user
+
+        queryset = Order.objects.select_related(
+            "buyer",
+            "batch__produce",
+            "batch__produce__farmer",
+            "delivery"
+        )
+        
         if user.role == 'buyer':
-            return Order.objects.filter(buyer=user).select_related('batch__produce')
+            return queryset.filter(buyer=user)
         
         if user.role == 'farmer':
-            return Order.objects.filter(batch__produce__farmer=user).select_related('batch__produce').order_by('-created_at')
+            return queryset.filter(batch__produce__farmer=user).order_by('-created_at')
         
         
 
@@ -65,7 +73,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         orders = self.get_queryset()
 
         #get available produce so a buyer can select an item
-        available_batches = ProduceBatch.objects.filter(quantity__gt=0).select_related('produce')
+        available_batches = ProduceBatch.objects.filter(
+            quantity__gt=0).select_related('produce', 'produce__farmer')
         #serialized_batches = ProduceBatchSerializer(available_batches, many=True)
 
         #search feature
