@@ -22,6 +22,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from dj_rest_auth.views import PasswordResetConfirmView
+from debug_toolbar.toolbar import debug_toolbar_urls
 
 ...
 #swagger schema
@@ -57,4 +58,4 @@ urlpatterns = [
 
     #landing page
     path('', include('accounts.urls')),
-]
+] + debug_toolbar_urls()
