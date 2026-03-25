@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import requests
 import base64
+import stripe
 from datetime import datetime
 from django.conf import settings
 from .models import MpesaRequest, MpesaResponse, MpesaCallBack
@@ -11,6 +12,9 @@ from .serializers import MpesaRequestSerializer, MpesaResponseSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from orders.models import Order
 from accounts.helpers import normalize_phone_number
+from django.conf import settings
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 @api_view(['post'])
@@ -102,3 +106,54 @@ def mpesa_callback(request):
         except Order.DoesNotExist:
             return Response({'ResultDesc':'Order not found'})
     return Response({'ResultDescription':'Payment Failed'})
+
+# use stripe webhook metadata to not create a serializer
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def stripe_checkout(request):
+    try:
+        order = Order.objects.get(id=request.data.get('order_id'))
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data':{
+                    'currency': 'kes',
+                    'product_data': {'name': f"Order #{order.id}"},
+                    'unit_amount': int(order.total_price *100)
+                },
+                'quantity': 1
+            }],
+            mode='payment',
+            success_url='https://agri-marketplace-app-react.vercel.app/market',
+            cancel_url='https://agri-marketplace-app-react.vercel.app/market',
+            metadata={'order_id': order.id} # save the id in stripe
+        )
+        return Response({'url': session.url}, status=status.HTTP_200_OK) #200ok
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+#allow stripe access without token
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except Exception:
+        return Response(status=400)
+    
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        order_id = session['metadata']['order_id']
+
+        #update order model
+        order = Order.objects.get(id=order_id)
+        order.status = 'paid'
+        order.save()
+
+    return Response(status=200)
