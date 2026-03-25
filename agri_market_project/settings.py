@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'allauth',
     'allauth.account',
-    'logistics'
+    'logistics',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
@@ -70,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -267,6 +269,12 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000"
 ]
 
+# debug N+1
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -379,3 +387,8 @@ else:
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+#stripe
+STRIPE_PUBLIC_KEY=config('PK_TEST')
+STRIPE_SECRET_KEY=config('SK_TEST')
+STRIPE_WEBHOOK_SECRET= config('STRIPE_WEBHOOK_SECRET')
