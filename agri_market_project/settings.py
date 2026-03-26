@@ -372,7 +372,7 @@ else:
 REST_AUTH = {
     "PASSWORD_RESET_CONFIRM_URL": f'{FRONTEND_URL}/reset-password/{{uid}}/{{token}}',
     "PASSWORD_RESET_SERIALIZER": "dj_rest_auth.serializers.PasswordResetSerializer",
-    "PASSWORD_RESET_USE_SITES_DOMAIN": True,
+    "PASSWORD_RESET_USE_SITES_DOMAIN": False,
 }
 
 SITE_ID = 2

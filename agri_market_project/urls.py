@@ -49,7 +49,7 @@ urlpatterns = [
     path('api/', include('mpesa.urls')),
     path('api/', include('logistics.urls')),
     path('api/auth/', include('dj_rest_auth.urls')),
-    re_path(r'^api/password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,32})/$', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('api/password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 
     #swagger api patters
     path('swagger.<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
