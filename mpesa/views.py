@@ -115,6 +115,7 @@ def stripe_checkout(request):
         order = Order.objects.get(id=request.data.get('order_id'))
 
         session = stripe.checkout.Session.create(
+            ui_mode='embedded',
             payment_method_types=['card'],
             line_items=[{
                 'price_data':{
@@ -125,11 +126,11 @@ def stripe_checkout(request):
                 'quantity': 1
             }],
             mode='payment',
-            success_url='https://agri-marketplace-app-react.vercel.app/market',
-            cancel_url='https://agri-marketplace-app-react.vercel.app/market',
+            
+            return_url='https://agri-marketplace-app-react.vercel.app/market{CHECKOUT_SESSION_ID}',
             metadata={'order_id': order.id} # save the id in stripe
         )
-        return Response({'url': session.url}, status=status.HTTP_200_OK) #200ok
+        return Response({'clientSecret': session.client_secret}, status=status.HTTP_200_OK) #200ok
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
