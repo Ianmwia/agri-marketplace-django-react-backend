@@ -15,7 +15,9 @@ class Order(models.Model):
         ('accepted','Accepted'),
         ('rejected','Rejected'),
         ('paid', 'Paid'),
-        ('delivered','Delivered')
+        ('delivered','Delivered'),
+        ('canceled','Canceled')
+
     )
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='buyer_orders')
     batch = models.ForeignKey(ProduceBatch, related_name='orders', on_delete=models.CASCADE)
