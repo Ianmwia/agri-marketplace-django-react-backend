@@ -116,8 +116,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             serializer.save()
         
             orders = self.get_queryset()
-            available_produce = ProduceBatch.objects.filter(quantity__gt=0)
+            available_produce = ProduceBatch.objects.filter(quantity__gt=0).select_related('produce', 'produce__farmer')[:25]
             return Response({
+                'message': 'Order placed successfully',
                 'serializer': serializer.data,
                 'orders':OrderSerializer(orders, many=True).data, 
                 'available_produce': ProduceBatchSerializer(available_produce, many=True).data})
@@ -188,13 +189,25 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.status = 'canceled'
         order.save(update_fields=['status'])
 
-        orders = self.get_queryset()
-        available_batches = ProduceBatch.objects.filter(quantity__gt=0).select_related('produce', 'produce__farmer')
+        #auto refresh frontend
+        orders_queryset = self.get_queryset()
+
+        page = self.paginate_queryset(orders_queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data)
+
+            available_batches = ProduceBatch.objects.filter(quantity__gt=0).select_related('produce', 'produce__farmer')
+            response.data['orders'] =serializer.data
+            response.data['available_produce'] = ProduceBatchSerializer(available_batches, many=True).data
+            return response
+        
+        #pagination fallback
         return Response ({
             'message': 'Order canceled',
             'status': order.status,
-            'orders': OrderSerializer(orders, many=True).data,
-            'available_batches': ProduceBatchSerializer(available_batches, many=True).data
+            'orders': OrderSerializer(orders_queryset, many=True).data,
+            'available_produce': ProduceBatchSerializer(available_batches, many=True).data
         })
     
     #mpesa pay after accept
