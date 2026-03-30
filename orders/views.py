@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Order
@@ -53,7 +53,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             "batch__produce",
             "batch__produce__farmer",
             "delivery"
-        )
+        ).exclude(status='canceled')
         
         if user.role == 'buyer':
             return queryset.filter(buyer=user)
@@ -74,7 +74,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         #get available produce so a buyer can select an item
         available_batches = ProduceBatch.objects.filter(
-            quantity__gt=0).select_related('produce', 'produce__farmer')
+            quantity__gt=0).select_related('produce', 'produce__farmer')[:25]
         #serialized_batches = ProduceBatchSerializer(available_batches, many=True)
 
         #search feature
@@ -84,7 +84,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         if search_query:
             #search by produce name
             available_batches = available_batches.filter(
-                Q(produce__name__icontains=search_query) | Q(produce__farmer__location__icontains=search_query))
+                Q(produce__name__icontains=search_query) | Q(produce__farmer__location__icontains=search_query))[:25]
 
         #pagination
         page = self.paginate_queryset(orders)
@@ -163,6 +163,39 @@ class OrderViewSet(viewsets.ModelViewSet):
         send_free_sms(order.buyer.phone, msg)
 
         return Response({"message": "Order Accepted and SMS sent", 'status': order.status})
+    
+    @action(detail=True, methods=['post'])
+    def cancel_order(self, request, pk=None):
+        order = get_object_or_404(Order, pk=pk)
+        user = request.user
+
+        if user != order.buyer:
+            return Response ({'error': 'Only the buyer can cancel an order'})
+        
+        #cant cancel if order is delivered
+        if order.status == ['delivered', 'canceled']:
+            return Response ({'error': 'Delivered orders cannot be canceled'})
+        if order.status == 'canceled':
+            return Response ({'error': 'Order is already canceled'})
+        # restore stock if cancelled
+        
+        batch = order.batch
+        batch.quantity = F('quantity') + order.quantity
+        batch.save(update_fields=['quantity'])
+
+        batch.refresh_from_db(fields=['quantity'])
+
+        order.status = 'canceled'
+        order.save(update_fields=['status'])
+
+        orders = self.get_queryset()
+        available_batches = ProduceBatch.objects.filter(quantity__gt=0).select_related('produce', 'produce__farmer')
+        return Response ({
+            'message': 'Order canceled',
+            'status': order.status,
+            'orders': OrderSerializer(orders, many=True).data,
+            'available_batches': ProduceBatchSerializer(available_batches, many=True).data
+        })
     
     #mpesa pay after accept
     @action(detail=True, methods=['post'])
