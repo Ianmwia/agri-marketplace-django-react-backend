@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from rest_framework import viewsets, permissions, serializers, status
 from .models import Produce
 from .serializers import ProduceSerializer
-from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from orders.models import Order
 from produce.models import Produce
@@ -26,7 +26,7 @@ class ProduceViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated,IsAFarmer]
 
     #http render in django
-    renderer_classes = [JSONRenderer]
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
     template_name = 'produce.html'
 
     def get_queryset(self):
@@ -35,9 +35,9 @@ class ProduceViewSet(viewsets.ModelViewSet):
 
         return Produce.objects.filter(
             farmer=self.request.user)\
+        .select_related('category', 'farmer')\
         .prefetch_related('batches')\
-    .select_related('category', 'farmer')\
-    .order_by('-id')
+        .order_by('-id')
     
     @action(detail=True, methods=['post'])
     def add_batch(self, request, pk=None):
@@ -51,7 +51,7 @@ class ProduceViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         # get the farmers produce
         serializer = self.get_serializer()
-        orders = Order.objects.filter(batch__produce__farmer=request.user)
+        orders = Order.objects.filter(batch__produce__farmer=request.user).select_related('batch', 'batch__produce', 'batch__produce__farmer', 'buyer', 'delivery')
         produce_list = self.get_queryset()
 
         officers_queryset = CustomUser.objects.filter(role='field_officer',) # react get file officer
@@ -71,7 +71,7 @@ class ProduceViewSet(viewsets.ModelViewSet):
                 'reports': list(reports.values()),
                 'officers': officers_data
             })
-        return Response({'serializer': serializer.data, 'orders': orders, 'produce_list': produce_list, 'report_serializer':report_serializer, 'reports': reports})
+        return Response({'serializer': serializer.data, 'orders': OrderSerializer(orders, many=True).data, 'produce_list': ProduceSerializer(produce_list, many=True).data, 'report_serializer':report_serializer.data, 'reports': ReportSerializer(reports, many=True).data})
     
 
     def destroy(self, request, *args, **kwargs):
