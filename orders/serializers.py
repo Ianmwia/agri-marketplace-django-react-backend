@@ -20,6 +20,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     farmer_first_name = serializers.ReadOnlyField(source='batch.produce.farmer.first_name')
     farmer_last_name = serializers.ReadOnlyField(source='batch.produce.farmer.last_name')
+    unit = serializers.ReadOnlyField(source='batch.unit')
 
     class Meta:
         model = Order
@@ -68,5 +69,5 @@ class ProduceBatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProduceBatch
-        fields = ['id', 'batch_number', 'produce_name', 'quantity', 'price_per_unit', 'produce_image', 'farmer_first_name', 'farmer_last_name', 'farmer_location']
+        fields = ['id', 'batch_number', 'produce_name', 'quantity', 'price_per_unit', 'produce_image', 'farmer_first_name', 'farmer_last_name', 'farmer_location', 'unit']
 
