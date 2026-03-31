@@ -18,7 +18,7 @@ from mpesa.models import MpesaRequest, MpesaResponse
 from accounts.helpers import send_free_sms, normalize_phone_number
 
 #pagination
-from .pagination import Pagination
+from .pagination import Pagination, MarketPlacePagination
 
 #ordering
 from rest_framework.filters import OrderingFilter
@@ -109,7 +109,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         #get available produce so a buyer can select an item
         available_batches = ProduceBatch.objects.filter(
-            quantity__gt=0).select_related('produce', 'produce__farmer')[:25]
+            quantity__gt=0).select_related('produce', 'produce__farmer')
         #serialized_batches = ProduceBatchSerializer(available_batches, many=True)
 
         #search feature
@@ -119,8 +119,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         if search_query:
             #search by produce name
             available_batches = available_batches.filter(
-                Q(produce__name__icontains=search_query) | Q(produce__farmer__location__icontains=search_query))[:25]
-
+                Q(produce__name__icontains=search_query) | Q(produce__farmer__location__icontains=search_query))
+            
+        marketplace_paginator = MarketPlacePagination()
+        marketplace_page = marketplace_paginator.paginate_queryset(available_batches, request)
+            
         #pagination
         page = self.paginate_queryset(orders)
         if page is not None:
@@ -130,7 +133,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 response = self.get_paginated_response(serializer.data)
 
                 response.data['orders'] = serializer.data
-                response.data['available_batches'] = ProduceBatchSerializer(available_batches, many=True).data
+                response.data['available_batches'] = ProduceBatchSerializer(marketplace_page, many=True).data
                 return response
         return Response({
             'serializer': serializer.data,
