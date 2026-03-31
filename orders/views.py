@@ -23,6 +23,11 @@ from .pagination import Pagination
 #ordering
 from rest_framework.filters import OrderingFilter
 
+# csv
+import csv
+from django.http import HttpResponse
+from django.utils import timezone
+
 class IsBuyer(BasePermission):
     def has_permission(self, request, view):
         return request.user.role == 'buyer' or request.user.role == 'farmer'
@@ -56,7 +61,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         ).exclude(status='canceled')
         
         if user.role == 'buyer':
-            return queryset.filter(buyer=user)
+            return queryset.filter(buyer=user).order_by('-created_at')
         
         if user.role == 'farmer':
             return queryset.filter(batch__produce__farmer=user).order_by('-created_at')
@@ -64,6 +69,36 @@ class OrderViewSet(viewsets.ModelViewSet):
         
 
         return Order.objects.none()
+    
+    @action(detail=False, methods=['get'])
+    def export_csv(self, request):
+        user = request.user
+        name = f'{user.first_name} {user.last_name}'.strip()
+        clean_name = name.replace(' ', '_')
+        date_str = timezone.now().strftime('%Y-%m-%d_%H:%M')
+        filename = f'{clean_name}_Orders_{date_str}.csv'
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        writer = csv.writer(response)
+        writer.writerow(['Order ID', 'Produce', 'Farmer', 'Quantity', 'Unit', 'Total Price', 'Status', 'Date'])
+
+        orders = self.get_queryset()
+
+        for order in orders:
+            writer.writerow([
+                order.id,
+                order.batch.produce.name,
+                f"{order.batch.produce.farmer.first_name} {order.batch.produce.farmer.last_name}",
+                order.quantity,
+                order.batch.unit,
+                order.total_price,
+                order.status,
+                order.created_at.strftime('%Y-%m-%d %H-%M'),
+            ])
+        return response
+
 
     def list(self, request, *args, **kwargs):
         #get empty serializer
