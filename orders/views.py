@@ -74,20 +74,40 @@ class OrderViewSet(viewsets.ModelViewSet):
     def export_csv(self, request):
         user = request.user
         name = f'{user.first_name} {user.last_name}'.strip()
+        role = user.role
+
         clean_name = name.replace(' ', '_')
+
         date_str = timezone.now().strftime('%Y-%m-%d_%H:%M')
-        filename = f'{clean_name}_Orders_{date_str}.csv'
+        filename = f'{role}_{clean_name}_Orders_{date_str}.csv'
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
         writer = csv.writer(response)
-        writer.writerow(['Order ID', 'Produce', 'Farmer', 'Quantity', 'Unit', 'Total Price', 'Status', 'Date'])
+        # writer.writerow(['Order ID', 'Produce', 'Farmer', 'Quantity', 'Unit', 'Total Price', 'Status', 'Date'])
+        if role == 'buyer':
+            writer.writerow(['Order ID', 'Produce', 'Farmer', 'Quantity', 'Unit', 'Total Price', 'Status', 'Date'])
+                    
+        elif role == 'farmer':
+            writer.writerow(['Order ID', 'Produce', 'Buyer', 'Quantity', 'Unit','Phone', 'Total Price', 'Status', 'Date'])
+
 
         orders = self.get_queryset()
 
         for order in orders:
-            writer.writerow([
+            # writer.writerow([
+            #     order.id,
+            #     order.batch.produce.name,
+            #     f"{order.batch.produce.farmer.first_name} {order.batch.produce.farmer.last_name}",
+            #     order.quantity,
+            #     order.batch.unit,
+            #     order.total_price,
+            #     order.status,
+            #     order.created_at.strftime('%Y-%m-%d %H-%M'),
+            # ])
+            if role == 'buyer':
+               writer.writerow([
                 order.id,
                 order.batch.produce.name,
                 f"{order.batch.produce.farmer.first_name} {order.batch.produce.farmer.last_name}",
@@ -95,7 +115,19 @@ class OrderViewSet(viewsets.ModelViewSet):
                 order.batch.unit,
                 order.total_price,
                 order.status,
-                order.created_at.strftime('%Y-%m-%d %H-%M'),
+                order.created_at.strftime('%Y-%m-%d %H:%M'),
+            ]) 
+            elif role == 'farmer':
+                writer.writerow([
+                order.id,
+                order.batch.produce.name,
+                f"{order.buyer.first_name} {order.buyer.last_name}",
+                order.quantity,
+                order.batch.unit,
+                f"'{order.buyer.phone}",
+                order.total_price,
+                order.status,
+                order.created_at.strftime('%Y-%m-%d %H:%M'),
             ])
         return response
 
