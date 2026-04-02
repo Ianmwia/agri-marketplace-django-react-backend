@@ -178,7 +178,8 @@ DATABASES = {
 #This logic checks if 'INTERNAL_DATABASE_URL' exists (Render). 
 #If not, it falls back to local SQLite so you don't get errors on your laptop.
 
-DATABASE_URL = os.environ.get("INTERNAL_DATABASE_URL") or os.environ.get("EXTERNAL_DATABASE_URL")
+
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("INTERNAL_DATABASE_URL") or os.environ.get("EXTERNAL_DATABASE_URL")
 
 if DATABASE_URL:
     DATABASES = {
