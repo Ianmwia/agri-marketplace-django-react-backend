@@ -7,9 +7,24 @@ import re
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
+    first_name = serializers.CharField(required=True, allow_blank=False, trim_whitespace=True)
+    last_name = serializers.CharField(required=True, allow_blank=False, trim_whitespace=True)
+
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'email', 'password','role', 'field', 'location']
+
+        extra_kwargs = {
+                        'email': {'required':True,
+                                  'error_messages':{
+                                        'unique': 'This email unavailable'
+                                    }
+                                  },
+                        'password': {'required':True},
+                        'role': {'required':True},
+                        'field': {'required':False},
+                        'location': {'required':True},
+                        }
 
     def validate(self, data):
         role = data.get('role')
@@ -18,7 +33,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if role == 'field_officer' and not field:
             raise serializers.ValidationError(
-                f'Users with the role Field Officer must Select a Field of expert'
+                {'field': ['Users with the role Field Officer must Select a Field of expert']}
             )
         return data
 
@@ -31,7 +46,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not re.search(r'[!@#$%^&*()<>?/]', data):
             raise serializers.ValidationError('Password must have at least one symbol')
         
-        user = CustomUser(data)
+        user = CustomUser()
         #password = data.get('password')
         try:
             validate_password(password=data, user=user)
