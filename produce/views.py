@@ -87,8 +87,8 @@ class ProduceViewSet(viewsets.ModelViewSet):
             self.perform_create(serializer)
             return Response(serializer.data)
         
-        # if request.accepted_renderer.format == 'json':
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.accepted_renderer.format == 'json':
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         orders = Order.objects.filter(batch__produce__farmer=request.user)
         report_serializer = ReportSerializer()
