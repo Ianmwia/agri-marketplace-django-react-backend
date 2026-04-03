@@ -67,8 +67,8 @@ def landing(request):
 @api_view(["GET"])
 def user_choices(request):
     return Response({
-        'roles' : [role[0] for role in CustomUser.ROLES],
-        'fields' : [field[0] for field in CustomUser.FIELDS]
+        'roles' : [{"value":r[0], "label":r[1]} for r in CustomUser.ROLES],
+        'fields' : [{"value":f[0], "label":f[1]} for f in CustomUser.FIELDS],
     })
 
 
