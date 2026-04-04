@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'channels',
     'mpesa',
     'rest_framework.authtoken',
+    'anymail',
     'dj_rest_auth',
     'allauth',
     'allauth.account',
@@ -378,17 +379,29 @@ REST_AUTH = {
 SITE_ID = 2
 
 
+# if DEBUG:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# else:
+#     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#     EMAIL_HOST = 'smtp.sendgrid.net'
+#     EMAIL_PORT = 465
+#     EMAIL_USE_TLS = False
+#     EMAIL_USE_SSL = True
+#     EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+#     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+#     DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+#smtp api
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.sendgrid.net'
-    EMAIL_PORT = 465
-    EMAIL_USE_TLS = False
-    EMAIL_USE_SSL = True
-    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-    DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+    EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+    
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+ANYMAIL = {
+    'SENDGRID_API_KEY': config('SENDGRID_API_KEY')
+}
 
 #stripe
 STRIPE_PUBLIC_KEY=config('PK_TEST')
