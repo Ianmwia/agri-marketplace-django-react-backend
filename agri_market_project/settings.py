@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'allauth',
     'allauth.account',
-    'logistics'
+    'logistics',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
