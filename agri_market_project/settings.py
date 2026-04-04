@@ -367,6 +367,8 @@ if DEBUG:
     FRONTEND_URL = 'http://localhost:5173'
 else:
     FRONTEND_URL = "https://agri-marketplace-app-react.vercel.app"
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
 
 #PASSWORD_RESET_CONFIRM_URL = f'{FRONTEND_URL}/password-reset-confirm/{{uid}}/{{token}}'
 
@@ -396,7 +398,7 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
     EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
-    
+
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 ANYMAIL = {
