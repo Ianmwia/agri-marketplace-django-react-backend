@@ -377,8 +377,8 @@ else:
 ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
 
 REST_AUTH = {
+    "PASSWORD_RESET_SERIALIZER": 'accounts.adapters.CustomPasswordResetSerializer',
     "PASSWORD_RESET_CONFIRM_URL": f'{FRONTEND_URL}/reset-password/{{uid}}/{{token}}',
-    "PASSWORD_RESET_SERIALIZER": "dj_rest_auth.serializers.PasswordResetSerializer",
     "PASSWORD_RESET_USE_SITES_DOMAIN": False,
 }
 

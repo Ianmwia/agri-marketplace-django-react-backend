@@ -7,7 +7,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
 
 
 from dj_rest_auth.serializers import PasswordResetSerializer
-class CustomPasswordSerializer(PasswordResetSerializer):
+class CustomPasswordResetSerializer(PasswordResetSerializer):
     def get_email_options(self):
         return {
             'extra_email_context':{
