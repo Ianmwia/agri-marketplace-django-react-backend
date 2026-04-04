@@ -70,6 +70,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -409,7 +410,3 @@ ANYMAIL = {
 STRIPE_PUBLIC_KEY=config('PK_TEST')
 STRIPE_SECRET_KEY=config('SK_TEST')
 STRIPE_WEBHOOK_SECRET= config('STRIPE_WEBHOOK_SECRET')
-
-if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware'] 
