@@ -23,6 +23,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from dj_rest_auth.views import PasswordResetConfirmView
 from debug_toolbar.toolbar import debug_toolbar_urls
+from django.conf import settings
 
 ...
 #swagger schema
@@ -58,4 +59,8 @@ urlpatterns = [
 
     #landing page
     path('', include('accounts.urls')),
-] + debug_toolbar_urls()
+] 
+
+if settings.DEBUG:
+    from debug_toolbar import debug_toolbar_urls
+    urlpatterns = debug_toolbar_urls() +urlpatterns
