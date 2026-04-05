@@ -51,7 +51,7 @@ urlpatterns = [
     path('api/', include('mpesa.urls')),
     path('api/', include('logistics.urls')),
     path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/password/reset/confirm/<uidb64>/<token>/', RedirectView.as_view(url='https://agri-marketplace-app-react.vercel.app', permanent=False), name='password_reset_confirm'),
+    path('api/password/reset/confirm/<uidb64>/<token>/', RedirectView.as_view(url='https://agri-marketplace-app-react.vercel.app/reset-password/%(uid64)s/%(token)s/', permanent=False), name='password_reset_confirm'),
 
     #swagger api patters
     path('swagger.<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
