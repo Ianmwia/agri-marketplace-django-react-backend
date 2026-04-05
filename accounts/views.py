@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets, serializers, status
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from drf_yasg.utils import swagger_auto_schema
 from django.middleware.csrf import get_token
@@ -23,10 +23,13 @@ User = get_user_model()
 
 #/me/ fronted must not read roles from localstorage
 class MeView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response(UserSerializer(request.user).data)
+        if request.user.is_authenticated:
+            return Response(UserSerializer(request.user).data)
+        
+        return Response(None, status=status.HTTP_200_OK)
 
 # django react csrf cookie
 @ensure_csrf_cookie
