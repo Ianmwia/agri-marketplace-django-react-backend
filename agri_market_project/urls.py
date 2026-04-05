@@ -24,6 +24,12 @@ from drf_yasg import openapi
 from dj_rest_auth.views import PasswordResetConfirmView
 from django.views.generic import RedirectView
 from debug_toolbar.toolbar import debug_toolbar_urls
+from django.contrib.sitemaps.views import sitemap
+from produce.sitemap import ProduceSitemap
+
+sitemaps = {
+    'produce': ProduceSitemap
+}
 
 
 ...
@@ -57,6 +63,8 @@ urlpatterns = [
     path('swagger.<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger',cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',cache_timeout=0), name='schema-redoc'),
+
+    path('sitemap.xml/', sitemap, {'sitemaps':sitemaps}, name='sitemap'),
 
     #landing page
     path('', include('accounts.urls')),
