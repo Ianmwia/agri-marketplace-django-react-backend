@@ -22,6 +22,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from dj_rest_auth.views import PasswordResetConfirmView
+from django.views.generic import RedirectView
 from debug_toolbar.toolbar import debug_toolbar_urls
 
 
@@ -50,7 +51,7 @@ urlpatterns = [
     path('api/', include('mpesa.urls')),
     path('api/', include('logistics.urls')),
     path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('api/password/reset/confirm/<uidb64>/<token>/', RedirectView.as_view(url='https://.vercel.app', permanent=False), name='password_reset_confirm'),
 
     #swagger api patters
     path('swagger.<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
