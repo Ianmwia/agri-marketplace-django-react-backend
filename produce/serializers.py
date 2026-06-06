@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Category, Produce, ProduceBatch
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.db import transaction
 
 User = get_user_model()
 
@@ -57,7 +58,12 @@ class ProduceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f'Quantity must be at least 30 {unit}')
         if unit in ['unit'] and quantity < 1:
             raise serializers.ValidationError(f'Quantity must be at least 1')
-
+        
+        ## ---------------------------------------------------------------------
+        # Check if the batch number already exists before saving anything
+        # ---------------------------------------------------------------------
+        if ProduceBatch.objects.filter(batch_number=batch_number).exists():
+            raise serializers.ValidationError({'batch_number': f'Batch number {batch_number} already exists'})
         
         #accept input by name not fk id
         category_name  = self.initial_data.get('category')
@@ -69,16 +75,20 @@ class ProduceSerializer(serializers.ModelSerializer):
 
         validated_data['farmer'] = user
 
-        produce = super().create(validated_data)
+        # ADD THIS LINE HERE: Wrap the database saves in an atomic transaction
+        # ---------------------------------------------------------------------
+        with transaction.atomic():
 
-        ProduceBatch.objects.create(
-            produce=produce,
-            quantity = quantity,
-            unit = unit,
-            price_per_unit=price_per_unit,
-            batch_number = batch_number,
-            harvest_date = timezone.now().date()
-        )
+            produce = super().create(validated_data)
+
+            ProduceBatch.objects.create(
+                produce=produce,
+                quantity = quantity,
+                unit = unit,
+                price_per_unit=price_per_unit,
+                batch_number = batch_number,
+                harvest_date = timezone.now().date()
+            )
         return produce
     
     def update(self, instance, validated_data):
