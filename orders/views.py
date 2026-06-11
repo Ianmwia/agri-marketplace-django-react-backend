@@ -230,7 +230,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.save()
 
         #send sms message from text bee to buyer that order is accepted
-        msg = f'Order Confirmed: The farmer has accepted your request, please proceed to pay'
+        #msg = f'Order Confirmed: The farmer has accepted your request, please proceed to pay'
+        msg = (
+            f"Hello {buyer_name}, your order for {product_name} "
+            f"has been accepted by farmer {farmer_name}. "
+            f"Please proceed with payment."
+        )
         send_free_sms(order.buyer.phone, msg)
 
         return Response({"message": "Order Accepted and SMS sent", 'status': order.status})
